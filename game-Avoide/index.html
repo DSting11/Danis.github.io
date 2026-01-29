@@ -2,7 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
     <title>Avoide Mobile - Kelompok 3</title>
     
     <audio id="bgmMenu" loop preload="auto">
@@ -29,70 +32,54 @@
             --color-success: #00ff00;
             --color-danger: #ff0000;
             --joystick-bg: rgba(255, 255, 255, 0.15);
-            --joystick-handle: rgba(255, 255, 255, 0.9);
+            --joystick-handle: rgba(255, 255, 255, 0.95);
             --boost-btn-bg: rgba(255, 255, 255, 0.2);
-            --game-scale: 1;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            user-select: none; 
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent; 
+            touch-action: none;
+            -webkit-touch-callout: none;
+        }
 
-        html, body {
+        html {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #000000;
             color: var(--color-primary);
             overflow: hidden;
             height: 100vh;
             width: 100vw;
-            position: fixed;
             touch-action: none;
-        }
-
-        #game-wrapper {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: min(98vw, 98vh * 16/9);
-            height: min(98vw * 9/16, 98vh);
-            max-width: min(98vw, 98vh * 16/9);
-            max-height: min(98vw * 9/16, 98vh);
-            background: #000;
-            border: 3px solid #ffffff;
-            border-radius: 32px;
-            overflow: hidden;
-            box-shadow: 0 0 40px rgba(255,255,255,0.2), inset 0 0 20px rgba(255,255,255,0.05);
-        }
-
-        /* Mobile scaling - 40% smaller (0.60 scale) */
-        body.mobile-mode #game-wrapper {
-            transform: translate(-50%, -50%) scale(0.60);
-        }
-
-        body.mobile-mode .hud-panel {
-            transform: scale(0.60);
-        }
-
-        body.mobile-mode #mobileControls {
-            transform: scale(0.60);
-        }
-
-        body.mobile-mode #muteBtn {
-            transform: scale(0.60);
-            bottom: 5px;
-            right: 5px;
-        }
-
-        body.mobile-mode #muteBtn:hover {
-            transform: scale(0.70);
+            overscroll-behavior: none;
         }
 
         #game-container {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             position: relative;
             overflow: hidden;
             background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
-            border-radius: 21px;
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
+            padding-left: var(--safe-left);
+            padding-right: var(--safe-right);
         }
 
         canvas {
@@ -100,15 +87,17 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
             z-index: 1;
             filter: contrast(1.1) brightness(1.1);
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255,255,255,0.05);
@@ -147,16 +136,10 @@
             justify-content: center;
             align-items: center;
             z-index: 10;
-            background: radial-gradient(circle at center, rgba(20,20,20,0.95) 0%, rgba(0,0,0,0.98) 100%);
+            background: radial-gradient(circle at center, rgba(20,20,20,0.98) 0%, rgba(0,0,0,0.99) 100%);
             transition: opacity 0.8s ease, visibility 0.8s ease;
             overflow: hidden;
-            padding: 20px;
-            border-radius: 21px;
-            pointer-events: none;
-        }
-
-        #main-menu > * {
-            pointer-events: auto;
+            padding: max(20px, var(--safe-top)) max(20px, var(--safe-right)) max(20px, var(--safe-bottom)) max(20px, var(--safe-left));
         }
 
         #main-menu::before {
@@ -183,16 +166,16 @@
 
         .menu-header { 
             text-align: center; 
-            margin-bottom: 5vh; 
+            margin-bottom: max(20px, 5vh); 
             animation: slide-up 0.8s ease-out;
             z-index: 2;
             width: 100%;
         }
 
         .game-title { 
-            font-size: clamp(40px, 10vw, 80px); 
+            font-size: clamp(40px, 12vw, 100px); 
             font-weight: 900; 
-            letter-spacing: clamp(5px, 1.5vw, 15px); 
+            letter-spacing: clamp(5px, 2vw, 15px); 
             color: #ffffff; 
             text-transform: uppercase; 
             animation: strong-pulse 3s infinite;
@@ -203,7 +186,7 @@
                 0 0 40px rgba(255,255,255,0.2);
             position: relative;
             font-family: 'Courier New', monospace;
-            line-height: 1;
+            line-height: 1.2;
         }
 
         .game-title::after {
@@ -216,24 +199,25 @@
             background: linear-gradient(45deg, #ffffff 0%, #888888 50%, #ffffff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             opacity: 0.5;
             filter: blur(2px);
         }
 
         .game-subtitle { 
-            font-size: clamp(16px, 3vw, 24px); 
+            font-size: clamp(16px, 4vw, 24px); 
             color: #888; 
             letter-spacing: clamp(3px, 1vw, 8px); 
             text-transform: uppercase; 
-            margin-bottom: 30px; 
+            margin-bottom: max(15px, 3vh); 
             text-shadow: 0 0 10px rgba(255,255,255,0.3);
             animation: float 3s ease-in-out infinite;
         }
 
         .device-indicator {
-            font-size: clamp(12px, 2.5vw, 14px);
+            font-size: clamp(12px, 3vw, 14px);
             color: #666;
-            margin-bottom: 20px;
+            margin-bottom: max(15px, 3vh);
             padding: 8px 16px;
             border: 1px solid rgba(255,255,255,0.2);
             border-radius: 20px;
@@ -244,14 +228,15 @@
         .menu-buttons { 
             display: flex; 
             flex-direction: column; 
-            gap: 15px; 
-            width: min(320px, 70%);
+            gap: clamp(10px, 2vh, 15px); 
+            width: min(90%, 350px);
+            max-width: 90vw;
             z-index: 2;
         }
         
         .menu-btn, .boost-selected-display, .back-btn {
-            padding: clamp(15px, 3vw, 20px) clamp(20px, 4vw, 40px);
-            font-size: clamp(14px, 3vw, 16px);
+            padding: clamp(14px, 4vw, 18px) clamp(20px, 5vw, 30px);
+            font-size: clamp(14px, 4vw, 16px);
             color: #ffffff;
             background: rgba(255, 255, 255, 0.05);
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -264,11 +249,14 @@
             position: relative;
             overflow: hidden;
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             touch-action: manipulation;
-            white-space: nowrap;
-            pointer-events: auto !important;
-            z-index: 100;
+            -webkit-touch-callout: none;
+            min-height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .menu-btn::before, .back-btn::before {
@@ -282,7 +270,7 @@
             transition: left 0.5s;
         }
 
-        .menu-btn:hover::before, .menu-btn:active::before, .back-btn:hover::before, .back-btn:active::before {
+        .menu-btn:hover::before, .back-btn:hover::before, .menu-btn:active::before {
             left: 100%;
         }
 
@@ -300,7 +288,7 @@
         .boost-selected-display {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.5);
-            font-size: clamp(12px, 2.5vw, 14px);
+            font-size: clamp(12px, 3.5vw, 14px);
             padding: 12px;
             text-align: center;
             color: #fff;
@@ -315,27 +303,21 @@
             height: 100%;
             display: none;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             z-index: 20;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.98);
             opacity: 0;
             transition: opacity 0.5s ease;
             overflow-y: auto;
-            padding: 40px 20px;
-            border-radius: 21px;
-            pointer-events: none;
+            padding: max(80px, calc(var(--safe-top) + 60px)) 20px max(40px, var(--safe-bottom)) 20px;
         }
 
-        #credits-screen > *, #boost-screen > * {
-            pointer-events: auto;
-        }
-
-        #credits-screen.active, #boost-screen.active { display: flex; opacity: 1; pointer-events: auto; }
+        #credits-screen.active, #boost-screen.active { display: flex; opacity: 1; }
 
         .screen-title { 
-            font-size: clamp(24px, 5vw, 42px); 
-            margin-bottom: 30px; 
+            font-size: clamp(24px, 6vw, 42px); 
+            margin-bottom: max(20px, 4vh); 
             text-transform: uppercase; 
             letter-spacing: 8px; 
             color: #ffffff;
@@ -345,6 +327,13 @@
             border-bottom: 2px solid rgba(255,255,255,0.3);
             padding-bottom: 15px;
             text-align: center;
+            position: sticky;
+            top: 0;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            width: 100%;
+            z-index: 10;
         }
 
         .credits-row {
@@ -352,30 +341,26 @@
             flex-direction: row;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 15px;
-            max-width: 100%;
+            gap: clamp(10px, 3vw, 20px);
+            max-width: 1400px;
             width: 100%;
             margin-bottom: 30px;
             padding: 0 10px;
-            overflow-y: auto;
-            max-height: 50vh;
         }
 
         .credit-card {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 15px;
+            padding: clamp(10px, 3vw, 20px);
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
+            border-radius: 20px;
             transition: all 0.3s ease;
             animation: fade-in 0.5s forwards;
             opacity: 0;
-            width: clamp(110px, 20vw, 150px);
+            width: min(140px, 42vw);
             flex-shrink: 0;
-            pointer-events: auto !important;
-            cursor: pointer;
         }
 
         .credit-card:hover, .credit-card:active {
@@ -389,7 +374,7 @@
             width: 100%;
             aspect-ratio: 1;
             position: relative;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 8px 25px rgba(0,0,0,0.4);
@@ -424,7 +409,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(32px, 6vw, 48px);
+            font-size: clamp(36px, 10vw, 48px);
             font-weight: 900;
             color: #ffffff;
             position: absolute;
@@ -435,7 +420,7 @@
         }
 
         .credit-name {
-            font-size: clamp(14px, 3vw, 18px);
+            font-size: clamp(14px, 4vw, 18px);
             font-weight: 700;
             color: #ffffff;
             margin-bottom: 4px;
@@ -446,7 +431,7 @@
         }
 
         .credit-role {
-            font-size: clamp(9px, 2.2vw, 12px);
+            font-size: clamp(10px, 3vw, 12px);
             color: #aaa;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -456,16 +441,15 @@
 
         .boost-grid {
             display: flex;
-            gap: 15px;
+            gap: clamp(10px, 3vw, 20px);
             margin-bottom: 30px;
             flex-wrap: wrap;
             justify-content: center;
-            max-width: 100%;
         }
 
         .boost-card {
-            width: clamp(130px, 25vw, 180px);
-            padding: 20px 15px;
+            width: min(160px, 42vw);
+            padding: clamp(15px, 5vw, 25px) clamp(10px, 3vw, 15px);
             border: 2px solid rgba(255,255,255,0.2);
             border-radius: 16px;
             text-align: center;
@@ -473,9 +457,8 @@
             transition: all 0.3s ease;
             background: rgba(255,255,255,0.05);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             color: #fff;
-            pointer-events: auto !important;
-            z-index: 101;
         }
 
         .boost-card:hover, .boost-card:active {
@@ -498,21 +481,21 @@
         }
 
         .boost-icon { 
-            font-size: clamp(32px, 6vw, 48px); 
-            margin-bottom: 12px; 
+            font-size: clamp(32px, 8vw, 48px); 
+            margin-bottom: 15px; 
             filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
         }
         .boost-name { 
-            font-size: clamp(14px, 3vw, 18px); 
+            font-size: clamp(14px, 4vw, 18px); 
             font-weight: 700; 
-            margin-bottom: 8px; 
+            margin-bottom: 10px; 
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         .boost-desc { 
-            font-size: clamp(10px, 2.5vw, 12px); 
+            font-size: clamp(10px, 3vw, 12px); 
             color: #aaa; 
-            line-height: 1.4; 
+            line-height: 1.5; 
         }
 
         #game-ui {
@@ -525,77 +508,58 @@
             z-index: 5;
             opacity: 0;
             transition: opacity 1s ease;
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
+            padding-left: var(--safe-left);
+            padding-right: var(--safe-right);
         }
 
         #game-ui.active { opacity: 1; }
 
-        .hud-panel { 
-            position: absolute; 
-            padding: 10px; 
-            pointer-events: none; 
-            transform-origin: top right;
-        }
-        
-        .hud-panel > * {
-            pointer-events: auto;
-        }
-        
+        .hud-panel { position: absolute; padding: 15px; pointer-events: auto; }
         .health-panel { 
-            top: 15px; 
-            right: 15px; 
-            width: 180px; 
+            top: max(15px, var(--safe-top)); 
+            right: max(15px, var(--safe-right)); 
+            width: min(200px, 35vw); 
+            min-width: 140px;
             background: rgba(0,0,0,0.6);
             border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 12px;
-            transform-origin: top right;
         }
         
-        body.mobile-mode .health-panel {
-            width: 160px;
-            top: 10px;
-            right: 10px;
-        }
-
         /* Mobile Controls */
         .mobile-controls {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            z-index: 9999;
+            height: auto;
+            min-height: 200px;
+            z-index: 10;
             pointer-events: none;
             display: none;
+            padding-bottom: max(20px, var(--safe-bottom));
+            padding-left: var(--safe-left);
+            padding-right: var(--safe-right);
         }
 
         .mobile-controls.active {
             display: block;
-            pointer-events: auto;
         }
 
         .joystick-area {
             position: absolute;
-            left: 50px;
-            bottom: 40px;
+            left: max(20px, var(--safe-left));
+            bottom: max(20px, var(--safe-bottom));
             width: 140px;
             height: 140px;
-            pointer-events: auto !important;
+            pointer-events: auto;
             touch-action: none;
-            transform-origin: bottom left;
-            z-index: 10000;
-        }
-
-        body.mobile-mode .joystick-area {
-            transform: scale(0.60);
-            left: 20px;
-            bottom: 20px;
-            pointer-events: auto !important;
         }
 
         .joystick-base {
             position: absolute;
-            width: 100%;
-            height: 100%;
+            width: 110px;
+            height: 110px;
             background: var(--joystick-bg);
             border: 2px solid rgba(255,255,255,0.3);
             border-radius: 50%;
@@ -603,14 +567,14 @@
             left: 50%;
             transform: translate(-50%, -50%);
             backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            pointer-events: none;
         }
 
         .joystick-handle {
             position: absolute;
-            width: 50px;
-            height: 50px;
+            width: 46px;
+            height: 46px;
             background: var(--joystick-handle);
             border: 2px solid rgba(0,0,0,0.3);
             border-radius: 50%;
@@ -618,15 +582,19 @@
             left: 50%;
             transform: translate(-50%, -50%);
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            transition: transform 0.05s;
+            transition: none;
             pointer-events: none;
-            z-index: 10001;
+        }
+
+        .joystick-handle.active {
+            background: rgba(255,255,255,1);
+            box-shadow: 0 0 20px rgba(255,255,255,0.8);
         }
 
         .boost-button {
             position: absolute;
-            right: 40px;
-            bottom: 50px;
+            right: max(20px, var(--safe-right));
+            bottom: max(40px, calc(var(--safe-bottom) + 20px));
             width: 90px;
             height: 90px;
             border-radius: 50%;
@@ -636,33 +604,20 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            pointer-events: auto !important;
-            cursor: pointer;
+            pointer-events: auto;
+            touch-action: manipulation;
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
             transition: all 0.2s;
             user-select: none;
             -webkit-user-select: none;
-            transform-origin: bottom right;
-            z-index: 10001;
-            touch-action: manipulation;
-        }
-
-        body.mobile-mode .boost-button {
-            transform: scale(0.60);
-            right: 20px;
-            bottom: 25px;
-            pointer-events: auto !important;
         }
 
         .boost-button:active {
-            transform: scale(0.95);
+            transform: scale(0.92);
             background: rgba(255,255,255,0.3);
             box-shadow: 0 0 30px rgba(255,255,255,0.4);
-        }
-
-        body.mobile-mode .boost-button:active {
-            transform: scale(0.60) scale(0.95);
         }
 
         .boost-button.ready {
@@ -672,7 +627,7 @@
         }
 
         .boost-button.cooldown {
-            opacity: 0.5;
+            opacity: 0.6;
             border-color: #666;
         }
 
@@ -698,42 +653,35 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: conic-gradient(rgba(0,0,0,0.6) var(--cooldown-percent, 0%), transparent var(--cooldown-percent, 0%));
+            background: conic-gradient(rgba(0,0,0,0.7) var(--cooldown-percent, 0%), transparent var(--cooldown-percent, 0%));
             pointer-events: none;
-            z-index: 10002;
+            transition: none;
         }
 
         .boost-panel {
-            bottom: 20px;
+            bottom: max(30px, var(--safe-bottom));
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             background: rgba(0,0,0,0.6);
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 30px;
             border: 1px solid rgba(255,255,255,0.3);
             box-shadow: 0 0 20px rgba(255,255,255,0.1);
-            transform-origin: bottom center;
-        }
-        
-        body.mobile-mode .boost-panel {
-            transform: translateX(-50%) scale(0.85);
-            bottom: 15px;
-            padding: 6px 12px;
         }
 
         .boost-key {
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             border: 2px solid rgba(255,255,255,0.5);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            font-size: 14px;
+            font-size: 16px;
             background: rgba(255,255,255,0.1);
             color: #fff;
             box-shadow: 0 0 15px rgba(255,255,255,0.1);
@@ -753,20 +701,20 @@
 
         .boost-info { display: flex; flex-direction: column; }
         .boost-type { 
-            font-size: 11px; 
+            font-size: 12px; 
             font-weight: 700; 
             text-transform: uppercase; 
             color: #fff;
             letter-spacing: 1px;
         }
-        .boost-status { font-size: 9px; color: #aaa; }
+        .boost-status { font-size: 10px; color: #aaa; }
 
         .cooldown-bar {
-            width: 70px;
+            width: 80px;
             height: 3px;
             background: rgba(255,255,255,0.1);
             border-radius: 2px;
-            margin-top: 3px;
+            margin-top: 4px;
             overflow: hidden;
         }
 
@@ -778,20 +726,14 @@
         }
 
         .countdown-panel {
-            top: 15px;
+            top: max(15px, var(--safe-top));
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
-            transform-origin: top center;
-        }
-        
-        body.mobile-mode .countdown-panel {
-            transform: translateX(-50%) scale(0.85);
-            top: 10px;
         }
 
         .countdown-display {
-            font-size: clamp(36px, 6vw, 48px);
+            font-size: clamp(28px, 8vw, 48px);
             font-weight: 900;
             color: #ffffff;
             font-family: 'Courier New', monospace;
@@ -804,7 +746,7 @@
         }
 
         .countdown-label { 
-            font-size: clamp(10px, 2vw, 12px); 
+            font-size: clamp(9px, 2.5vw, 10px); 
             text-transform: uppercase; 
             letter-spacing: 2px; 
             color: #888;
@@ -812,15 +754,15 @@
         }
 
         .health-label { 
-            font-size: 11px; 
+            font-size: clamp(10px, 3vw, 11px); 
             text-transform: uppercase; 
             letter-spacing: 1px; 
             color: #aaa; 
-            margin-bottom: 5px; 
+            margin-bottom: 6px; 
             display: flex; 
             justify-content: space-between; 
         }
-        .health-value { color: #fff; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .health-value { color: #fff; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.5); font-size: clamp(11px, 3vw, 12px); }
         .health-bar-container { 
             width: 100%; 
             height: 8px; 
@@ -861,21 +803,15 @@
             background: rgba(0,0,0,0.95);
             opacity: 0;
             transition: opacity 0.5s ease;
-            padding: 20px;
-            border-radius: 21px;
-            pointer-events: none;
+            padding: max(20px, var(--safe-top)) max(20px, var(--safe-right)) max(20px, var(--safe-bottom)) max(20px, var(--safe-left));
         }
 
-        #game-over-screen > *, #win-screen > * {
-            pointer-events: auto;
-        }
-
-        #game-over-screen.active, #win-screen.active { display: flex; opacity: 1; pointer-events: auto; }
+        #game-over-screen.active, #win-screen.active { display: flex; opacity: 1; }
         .game-over-title, .win-title { 
-            font-size: clamp(40px, 8vw, 72px); 
+            font-size: clamp(40px, 12vw, 80px); 
             font-weight: 900; 
             text-transform: uppercase; 
-            letter-spacing: clamp(5px, 1.5vw, 10px); 
+            letter-spacing: 10px; 
             margin-bottom: 15px;
             color: #fff;
             text-align: center;
@@ -896,7 +832,7 @@
                 0 0 60px rgba(255,255,255,0.3);
         }
         .win-subtitle { 
-            font-size: clamp(18px, 4vw, 24px); 
+            font-size: clamp(16px, 5vw, 24px); 
             color: #aaa; 
             margin-bottom: 30px; 
             letter-spacing: 4px; 
@@ -906,13 +842,13 @@
         
         .button-group { 
             display: flex; 
-            gap: 15px; 
+            gap: clamp(10px, 3vw, 20px); 
             flex-wrap: wrap;
             justify-content: center;
         }
         .restart-btn, .menu-btn-gameover {
-            padding: 15px 30px;
-            font-size: clamp(14px, 3vw, 16px);
+            padding: clamp(12px, 4vw, 15px) clamp(25px, 6vw, 35px);
+            font-size: clamp(13px, 4vw, 14px);
             background: transparent;
             color: #ffffff;
             border: 2px solid rgba(255,255,255,0.4);
@@ -923,10 +859,9 @@
             transition: all 0.3s ease;
             font-weight: 600;
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             touch-action: manipulation;
-            pointer-events: auto !important;
-            z-index: 101;
-            position: relative;
+            min-height: 50px;
         }
         .restart-btn:hover, .restart-btn:active, .menu-btn-gameover:hover, .menu-btn-gameover:active { 
             background: rgba(255,255,255,0.15); 
@@ -949,33 +884,30 @@
             opacity: 0;
             pointer-events: none;
             mix-blend-mode: screen;
-            border-radius: 21px;
         }
         .damage-flash.active { opacity: 1; animation: flash 0.3s ease; }
         @keyframes flash { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
 
         #muteBtn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
+            position: fixed;
+            bottom: max(20px, var(--safe-bottom));
+            right: max(20px, var(--safe-right));
+            z-index: 100;
             background: rgba(255,255,255,0.1);
             border: 2px solid rgba(255,255,255,0.3);
             border-radius: 50%;
             width: 50px;
             height: 50px;
             font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            touch-action: manipulation;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
             backdrop-filter: blur(10px);
-            touch-action: manipulation;
-            pointer-events: auto !important;
+            -webkit-backdrop-filter: blur(10px);
         }
-        #muteBtn:hover { 
+        #muteBtn:hover, #muteBtn:active { 
             transform: scale(1.1); 
             border-color: #ffffff;
             box-shadow: 0 0 20px rgba(255,255,255,0.3);
@@ -991,7 +923,7 @@
             width: 100%;
             height: 100%;
             background: #000;
-            z-index: 99999;
+            z-index: 1000;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -1005,7 +937,7 @@
         }
 
         .rotate-icon {
-            font-size: clamp(60px, 20vw, 80px);
+            font-size: min(80px, 20vw);
             margin-bottom: 20px;
             animation: rotate-device 2s ease-in-out infinite;
         }
@@ -1015,8 +947,140 @@
             50% { transform: rotate(90deg); }
         }
 
-        body { cursor: crosshair; }
-        .menu-btn, .back-btn, .restart-btn, .menu-btn-gameover, .boost-card { cursor: pointer; }
+        /* Mobile Specific Adjustments */
+        @media (max-width: 1024px) and (orientation: landscape) {
+            .health-panel {
+                width: 30vw;
+                max-width: 180px;
+                min-width: 120px;
+            }
+            
+            .boost-panel {
+                bottom: auto;
+                top: max(15px, var(--safe-top));
+                right: max(15px, var(--safe-right));
+                left: auto;
+                transform: none;
+                transform-origin: top right;
+                scale: 0.85;
+                padding: 8px 15px;
+            }
+            
+            .joystick-area {
+                width: 130px;
+                height: 130px;
+                left: max(15px, var(--safe-left));
+                bottom: max(15px, var(--safe-bottom));
+            }
+            
+            .joystick-base {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .joystick-handle {
+                width: 42px;
+                height: 42px;
+            }
+            
+            .boost-button {
+                width: 80px;
+                height: 80px;
+                right: max(15px, var(--safe-right));
+                bottom: max(30px, calc(var(--safe-bottom) + 10px));
+            }
+            
+            .boost-button-icon {
+                font-size: 24px;
+            }
+            
+            .boost-button-text {
+                font-size: 9px;
+            }
+            
+            .credits-row {
+                gap: 12px;
+            }
+            
+            .credit-card {
+                width: min(130px, 30vw);
+                min-width: 100px;
+                padding: 12px 8px;
+            }
+            
+            .countdown-panel {
+                top: max(10px, var(--safe-top));
+            }
+            
+            .countdown-display {
+                font-size: clamp(24px, 7vw, 36px);
+            }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            .menu-header {
+                margin-bottom: 15px;
+            }
+            
+            .game-subtitle {
+                margin-bottom: 10px;
+            }
+            
+            .menu-buttons {
+                gap: 8px;
+            }
+            
+            .menu-btn {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+            
+            .joystick-area {
+                bottom: max(10px, var(--safe-bottom));
+                height: 120px;
+            }
+            
+            .boost-button {
+                bottom: max(20px, calc(var(--safe-bottom) + 10px));
+                width: 70px;
+                height: 70px;
+            }
+            
+            .boost-button-icon {
+                font-size: 22px;
+            }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            body { cursor: none; }
+        }
+
+        .pause-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 50;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 24px;
+            letter-spacing: 4px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .pause-overlay.active {
+            display: flex;
+        }
+
+        .pause-text {
+            animation: pulse-red 2s infinite;
+        }
     </style>
 </head>
 <body>
@@ -1026,192 +1090,189 @@
         <p style="color: #888; font-size: clamp(14px, 4vw, 16px);">Game ini dimainkan dalam mode landscape (horizontal)</p>
     </div>
 
-    <div id="game-wrapper">
-        <div id="game-container">
-            <canvas id="gameCanvas"></canvas>
-            <div id="damageFlash" class="damage-flash"></div>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="damageFlash" class="damage-flash"></div>
+        
+        <div id="pauseOverlay" class="pause-overlay">
+            <div class="pause-text">⏸ PAUSED</div>
+            <div style="font-size: 14px; color: #888; margin-top: 10px;">Tap to resume</div>
+        </div>
+        
+        <button id="muteBtn">🔊</button>
+        
+        <div id="main-menu">
+            <div class="menu-header">
+                <h1 class="game-title">AVOIDE</h1>
+                <p class="game-subtitle">Kelompok 3</p>
+                <div class="device-indicator" id="deviceIndicator">Desktop Mode</div>
+            </div>
+            <div class="menu-buttons">
+                <button class="menu-btn" id="playBtn">Mulai Permainan</button>
+                <button class="menu-btn" id="boostBtn">Pilih Boost</button>
+                <div class="boost-selected-display" id="selectedBoostDisplay">
+                    Boost Aktif: <span id="selectedBoostName">Tidak Ada</span>
+                </div>
+                <button class="menu-btn" id="creditsBtn">Anggota</button>
+            </div>
+        </div>
+
+        <div id="credits-screen">
+            <h2 class="screen-title">Anggota Kelompok</h2>
             
-            <button id="muteBtn">🔊</button>
+            <div class="credits-row">
+                <div class="credit-card" style="animation-delay: 0s;">
+                    <div class="photo-container">
+                        <img src="assets/images/danis.png" alt="Danis" class="credit-photo" 
+                             onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
+                        <div class="credit-fallback">D</div>
+                    </div>
+                    <div class="credit-name">Danis</div>
+                    <div class="credit-role">Logika & Algoritma</div>
+                </div>
+                
+                <div class="credit-card" style="animation-delay: 0.1s;">
+                    <div class="photo-container">
+                        <img src="assets/images/dip.png" alt="Dipta" class="credit-photo" 
+                             onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
+                        <div class="credit-fallback">D</div>
+                    </div>
+                    <div class="credit-name">Dipta</div>
+                    <div class="credit-role">Playtester</div>
+                </div>
+                
+                <div class="credit-card" style="animation-delay: 0.2s;">
+                    <div class="photo-container">
+                        <img src="assets/images/risky.png" alt="Risky" class="credit-photo" 
+                             onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
+                        <div class="credit-fallback">R</div>
+                    </div>
+                    <div class="credit-name">Risky</div>
+                    <div class="credit-role">Playtester</div>
+                </div>
+                
+                <div class="credit-card" style="animation-delay: 0.3s;">
+                    <div class="photo-container">
+                        <img src="assets/images/fadil.png" alt="Fadil" class="credit-photo" 
+                             onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
+                        <div class="credit-fallback">?</div>
+                    </div>
+                    <div class="credit-name">Fadil</div>
+                    <div class="credit-role">Member</div>
+                </div>
+                
+                <div class="credit-card" style="animation-delay: 0.4s;">
+                    <div class="photo-container">
+                        <img src="assets/images/airlangga.png" alt="Airlangga" class="credit-photo" 
+                             onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
+                        <div class="credit-fallback">?</div>
+                    </div>
+                    <div class="credit-name">Airlangga</div>
+                    <div class="credit-role">Member</div>
+                </div>
+
+                <div class="credit-card" style="animation-delay: 0.5s;">
+                    <div class="photo-container">
+                        <img src="assets/images/bilal.png" alt="Bilal" class="credit-photo" 
+                             onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
+                        <div class="credit-fallback">?</div>
+                    </div>
+                    <div class="credit-name">Bilal</div>
+                    <div class="credit-role">Member</div>
+                </div>
+            </div>
             
-            <div id="main-menu">
-                <div class="menu-header">
-                    <h1 class="game-title">AVOIDE</h1>
-                    <p class="game-subtitle">Kelompok 3</p>
-                    <div class="device-indicator" id="deviceIndicator">Desktop Mode</div>
+            <button class="back-btn" id="backFromCredits">Kembali</button>
+        </div>
+
+        <div id="boost-screen">
+            <h2 class="screen-title">Pilih Boost</h2>
+            <div class="boost-grid">
+                <div class="boost-card" data-boost="health" id="boostHealth">
+                    <div class="boost-icon">♥</div>
+                    <div class="boost-name">Health</div>
+                    <div class="boost-desc">Heal 100% HP<br>Cooldown: 7 detik</div>
                 </div>
-                <div class="menu-buttons">
-                    <button class="menu-btn" id="playBtn">Mulai Permainan</button>
-                    <button class="menu-btn" id="boostBtn">Pilih Boost</button>
-                    <div class="boost-selected-display" id="selectedBoostDisplay">
-                        Boost Aktif: <span id="selectedBoostName">Tidak Ada</span>
-                    </div>
-                    <button class="menu-btn" id="creditsBtn">Anggota</button>
+                <div class="boost-card" data-boost="speed" id="boostSpeed">
+                    <div class="boost-icon">⚡</div>
+                    <div class="boost-name">Speed</div>
+                    <div class="boost-desc">2.5x Kecepatan<br>Durasi: 5s | CD: 10s</div>
+                </div>
+                <div class="boost-card" data-boost="invincible" id="boostInvincible">
+                    <div class="boost-icon">♠</div>
+                    <div class="boost-name">Invincible</div>
+                    <div class="boost-desc">Kebal Damage<br>Durasi: 5s | CD: 10s</div>
+                </div>
+            </div>
+            <div style="font-size: clamp(12px, 3.5vw, 14px); color: #888; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255,255,255,0.2); padding: 0 20px; text-align: center;">
+                <span class="desktop-hint">Tekan [E] saat permainan untuk menggunakan</span>
+                <span class="mobile-hint" style="display: none;">Tekan tombol Boost kanan bawah untuk menggunakan</span>
+            </div>
+            <button class="back-btn" id="backFromBoost">Kembali ke Menu</button>
+        </div>
+
+        <div id="game-ui">
+            <div class="hud-panel health-panel glass-panel">
+                <div class="health-label">
+                    <span>Health</span>
+                    <span class="health-value" id="healthText">100%</span>
+                </div>
+                <div class="health-bar-container">
+                    <div class="health-bar-fill" id="healthBarFill" style="width: 100%"></div>
                 </div>
             </div>
 
-            <div id="credits-screen">
-                <h2 class="screen-title">Anggota Kelompok</h2>
-                
-                <div class="credits-row">
-                    <div class="credit-card" style="animation-delay: 0s;">
-                        <div class="photo-container">
-                            <img src="assets/images/danis.png" alt="Danis" class="credit-photo" 
-                                 onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
-                            <div class="credit-fallback">D</div>
-                        </div>
-                        <div class="credit-name">Danis</div>
-                        <div class="credit-role">Logika & Algoritma</div>
-                    </div>
-                    
-                    <div class="credit-card" style="animation-delay: 0.1s;">
-                        <div class="photo-container">
-                            <img src="assets/images/dip.png" alt="Dipta" class="credit-photo" 
-                                 onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
-                            <div class="credit-fallback">D</div>
-                        </div>
-                        <div class="credit-name">Dipta</div>
-                        <div class="credit-role">Playtester</div>
-                    </div>
-                    
-                    <div class="credit-card" style="animation-delay: 0.2s;">
-                        <div class="photo-container">
-                            <img src="assets/images/risky.png" alt="Risky" class="credit-photo" 
-                                 onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
-                            <div class="credit-fallback">R</div>
-                        </div>
-                        <div class="credit-name">Risky</div>
-                        <div class="credit-role">Playtester</div>
-                    </div>
-                    
-                    <div class="credit-card" style="animation-delay: 0.3s;">
-                        <div class="photo-container">
-                            <img src="assets/images/fadil.png" alt="Fadil" class="credit-photo" 
-                                 onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
-                            <div class="credit-fallback">?</div>
-                        </div>
-                        <div class="credit-name">Fadil</div>
-                        <div class="credit-role">Member</div>
-                    </div>
-                    
-                    <div class="credit-card" style="animation-delay: 0.4s;">
-                        <div class="photo-container">
-                            <img src="assets/images/airlangga.png" alt="Airlangga" class="credit-photo" 
-                                 onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
-                            <div class="credit-fallback">?</div>
-                        </div>
-                        <div class="credit-name">Airlangga</div>
-                        <div class="credit-role">Member</div>
-                    </div>
-
-                    <div class="credit-card" style="animation-delay: 0.5s;">
-                        <div class="photo-container">
-                            <img src="assets/images/bilal.png" alt="Bilal" class="credit-photo" 
-                                 onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
-                            <div class="credit-fallback">?</div>
-                        </div>
-                        <div class="credit-name">Bilal</div>
-                        <div class="credit-role">Member</div>
-                    </div>
-                </div>
-                
-                <button class="back-btn" id="backFromCredits">Kembali</button>
+            <div class="hud-panel countdown-panel">
+                <div class="countdown-display" id="countdownTimer">150</div>
+                <div class="countdown-label">Detik Tersisa</div>
             </div>
 
-            <div id="boost-screen">
-                <h2 class="screen-title">Pilih Boost</h2>
-                <div class="boost-grid">
-                    <div class="boost-card" data-boost="health" id="boostHealth">
-                        <div class="boost-icon">♥</div>
-                        <div class="boost-name">Health</div>
-                        <div class="boost-desc">Heal 100% HP<br>Cooldown: 7 detik</div>
-                    </div>
-                    <div class="boost-card" data-boost="speed" id="boostSpeed">
-                        <div class="boost-icon">⚡</div>
-                        <div class="boost-name">Speed</div>
-                        <div class="boost-desc">2.5x Kecepatan<br>Durasi: 5s | CD: 10s</div>
-                    </div>
-                    <div class="boost-card" data-boost="invincible" id="boostInvincible">
-                        <div class="boost-icon">♠</div>
-                        <div class="boost-name">Invincible</div>
-                        <div class="boost-desc">Kebal Damage<br>Durasi: 5s | CD: 10s</div>
-                    </div>
-                </div>
-                <div style="font-size: clamp(12px, 3vw, 16px); color: #888; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">
-                    <span class="desktop-hint">Tekan [E] saat permainan untuk menggunakan</span>
-                    <span class="mobile-hint" style="display: none;">Tekan tombol Boost kanan bawah untuk menggunakan</span>
-                </div>
-                <button class="back-btn" id="backFromBoost">Kembali ke Menu</button>
-            </div>
-
-            <div id="game-ui">
-                <div class="hud-panel health-panel glass-panel">
-                    <div class="health-label">
-                        <span>Health</span>
-                        <span class="health-value" id="healthText">100%</span>
-                    </div>
-                    <div class="health-bar-container">
-                        <div class="health-bar-fill" id="healthBarFill" style="width: 100%"></div>
-                    </div>
-                </div>
-
-                <div class="hud-panel countdown-panel">
-                    <div class="countdown-display" id="countdownTimer">100</div>
-                    <div class="countdown-label">Detik Tersisa</div>
-                </div>
-
-                <div class="hud-panel boost-panel glass-panel" id="boostPanel" style="display: none;">
-                    <div class="boost-key" id="boostKey">E</div>
-                    <div class="boost-info">
-                        <div class="boost-type" id="boostTypeName">BOOST</div>
-                        <div class="boost-status" id="boostStatus">Ready</div>
-                        <div class="cooldown-bar" id="cooldownBar">
-                            <div class="cooldown-fill" id="cooldownFill" style="width: 100%"></div>
-                        </div>
+            <div class="hud-panel boost-panel glass-panel" id="boostPanel" style="display: none;">
+                <div class="boost-key" id="boostKey">E</div>
+                <div class="boost-info">
+                    <div class="boost-type" id="boostTypeName">BOOST</div>
+                    <div class="boost-status" id="boostStatus">Ready</div>
+                    <div class="cooldown-bar" id="cooldownBar">
+                        <div class="cooldown-fill" id="cooldownFill" style="width: 100%"></div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Mobile Controls -->
-            <div class="mobile-controls" id="mobileControls">
-                <div class="joystick-area" id="joystickArea">
-                    <div class="joystick-base" id="joystickBase"></div>
-                    <div class="joystick-handle" id="joystickHandle"></div>
-                </div>
-                
-                <div class="boost-button" id="mobileBoostBtn">
-                    <div class="boost-cooldown-overlay" id="boostCooldownOverlay"></div>
-                    <div class="boost-button-icon" id="mobileBoostIcon">⚡</div>
-                    <div class="boost-button-text" id="mobileBoostText">BOOST</div>
-                </div>
+        <!-- Mobile Controls -->
+        <div class="mobile-controls" id="mobileControls">
+            <div class="joystick-area" id="joystickArea">
+                <div class="joystick-base"></div>
+                <div class="joystick-handle" id="joystickHandle"></div>
             </div>
-
-            <div id="game-over-screen">
-                <h2 class="game-over-title">Game Over</h2>
-                <div style="font-size: clamp(16px, 4vw, 20px); color: #aaa; margin-bottom: 25px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">Kamu Kalah!</div>
-                <div class="button-group">
-                    <button class="restart-btn" id="retryBtn">Coba Lagi</button>
-                    <button class="menu-btn-gameover" id="menuBtnGameOver">Menu Utama</button>
-                </div>
+            
+            <div class="boost-button" id="mobileBoostBtn">
+                <div class="boost-cooldown-overlay" id="boostCooldownOverlay"></div>
+                <div class="boost-button-icon" id="mobileBoostIcon">⚡</div>
+                <div class="boost-button-text" id="mobileBoostText">BOOST</div>
             </div>
+        </div>
 
-            <div id="win-screen">
-                <h2 class="win-title">You Win</h2>
-                <div class="win-subtitle">Kamu Promax!</div>
-                <div class="button-group">
-                    <button class="restart-btn" id="playAgainBtn">Main Lagi</button>
-                    <button class="menu-btn-gameover" id="menuBtnWin">Halaman Utama</button>
-                </div>
+        <div id="game-over-screen">
+            <h2 class="game-over-title">Game Over</h2>
+            <div style="font-size: clamp(16px, 5vw, 18px); color: #aaa; margin-bottom: 25px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">Kamu Kalah!</div>
+            <div class="button-group">
+                <button class="restart-btn" id="retryBtn">Coba Lagi</button>
+                <button class="menu-btn-gameover" id="menuBtnGameOver">Menu Utama</button>
+            </div>
+        </div>
+
+        <div id="win-screen">
+            <h2 class="win-title">You Win</h2>
+            <div class="win-subtitle">Kamu Promax!</div>
+            <div class="button-group">
+                <button class="restart-btn" id="playAgainBtn">Main Lagi</button>
+                <button class="menu-btn-gameover" id="menuBtnWin">Halaman Utama</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Global error handler to catch any errors
-        window.onerror = function(msg, url, lineNo, columnNo, error) {
-            console.error('Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo);
-            return false;
-        };
-
         const CONFIG = {
             PLAYER: {
                 SIZE: 24,
@@ -1254,8 +1315,8 @@
                 LENGTH: 50,
             },
             BOSS: {
-                START_TIME: 45000,  // Boss muncul di detik 45
-                TOTAL_TIME: 100000, // Win di detik 100
+                START_TIME: 70000,
+                TOTAL_TIME: 150000,
                 LASER_RATE: 1,
                 BLOCK_RATE: 10,
                 EYE_SIZE: 100,
@@ -1283,8 +1344,7 @@
             },
             MOBILE: {
                 JOYSTICK_MAX_DIST: 35,
-                JOYSTICK_DEADZONE: 8,
-                SCALE: 0.60 // 40% smaller
+                JOYSTICK_DEADZONE: 8
             }
         };
 
@@ -1315,7 +1375,12 @@
                 return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
                        (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
             },
-            isPortrait: () => window.innerHeight > window.innerWidth
+            isPortrait: () => window.innerHeight > window.innerWidth,
+            vibrate: (pattern) => {
+                if (navigator.vibrate) {
+                    navigator.vibrate(pattern);
+                }
+            }
         };
 
         class AudioSystem {
@@ -1332,6 +1397,7 @@
                 this.isMuted = false;
                 this.transitioning = false;
                 this.sfxClick = document.getElementById('sfxClick');
+                this.audioContextAllowed = false;
             }
             
             init() { 
@@ -1343,8 +1409,16 @@
                 });
             }
             
+            resumeAudioContext() {
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                this.audioContextAllowed = true;
+            }
+            
             switchBGM(targetType) {
                 if(this.isMuted || this.transitioning) return;
+                this.resumeAudioContext();
                 const targetMap = {
                     'menu': this.bgmMenu,
                     'normal': this.bgmNormal,
@@ -1395,6 +1469,7 @@
             
             playClickSound() {
                 if(this.isMuted) return;
+                this.resumeAudioContext();
                 if(this.sfxClick) {
                     this.sfxClick.currentTime = 0;
                     this.sfxClick.volume = this.sfxVolume;
@@ -1404,6 +1479,7 @@
             
             playSound(type, freq, duration) {
                 if (!this.ctx || !this.enabled || this.isMuted) return;
+                this.resumeAudioContext();
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = type;
@@ -1470,13 +1546,18 @@
         class ParticleSystem {
             constructor() { this.particles = []; }
             spawnExplosion(x, y, count, color, speed=3) {
-                for(let i=0; i<count; i++) {
-                    const angle = (Math.PI*2/count)*i + Math.random()*0.5;
+                // Limit particles on mobile for performance
+                const isMobile = Utils.isMobile();
+                const mobileCount = isMobile ? Math.floor(count * 0.6) : count;
+                for(let i=0; i<mobileCount; i++) {
+                    const angle = (Math.PI*2/mobileCount)*i + Math.random()*0.5;
                     const vel = new Vector2(Math.cos(angle)*Utils.randomRange(1,speed), Math.sin(angle)*Utils.randomRange(1,speed));
                     this.particles.push(new Particle(x, y, vel.x, vel.y, Utils.randomInt(20,40), Utils.randomRange(2,4), color));
                 }
             }
             spawnTrail(x, y, color) { 
+                // Limit trails on mobile for performance
+                if (Utils.isMobile() && this.particles.length > 50) return;
                 const vel = new Vector2(Utils.randomRange(-0.5,0.5), Utils.randomRange(-0.5,0.5));
                 this.particles.push(new Particle(x, y, vel.x, vel.y, 15, 2, color));
             }
@@ -1510,10 +1591,12 @@
                 let acc = new Vector2(0,0);
                 
                 if (isMobile) {
+                    // Mobile joystick input
                     if (input.mobileJoystick && input.mobileJoystick.active) {
-                        acc = input.mobileJoystick.direction.mult(CONFIG.PLAYER.ACCELERATION * 0.5);
+                        acc = input.mobileJoystick.direction.mult(CONFIG.PLAYER.ACCELERATION * 0.6);
                     }
                 } else {
+                    // Desktop keyboard input
                     if(input.keys['KeyW'] || input.keys['ArrowUp']) acc.y -= CONFIG.PLAYER.ACCELERATION;
                     if(input.keys['KeyS'] || input.keys['ArrowDown']) acc.y += CONFIG.PLAYER.ACCELERATION;
                     if(input.keys['KeyA'] || input.keys['ArrowLeft']) acc.x -= CONFIG.PLAYER.ACCELERATION;
@@ -1548,6 +1631,10 @@
                 this.isBoostActive = true;
                 this.boostActiveEnd = currentTime + this.getBoostDuration();
                 this.boostCooldownEnd = currentTime + this.getBoostCooldown();
+                
+                // Vibrate on mobile
+                Utils.vibrate([50, 30, 50]);
+                
                 switch(this.selectedBoost) {
                     case 'health':
                         this.hp = Math.min(this.maxHp, this.hp + this.maxHp);
@@ -1594,6 +1681,10 @@
                 this.invincibleTimer = CONFIG.PLAYER.INVINCIBILITY_FRAMES;
                 this.lastDamageTime = now;
                 game.renderer.shakeScreen(10);
+                
+                // Vibrate on mobile when taking damage
+                Utils.vibrate([100, 50]);
+                
                 return true;
             }
 
@@ -2435,6 +2526,7 @@
                 this.bossMode=false; 
             }
             update(deltaTime,canvasWidth,canvasHeight,player) { 
+                if (game.paused) return;
                 const now=Date.now(); 
                 if(!this.bossMode) { 
                     if(now-this.lastBlockSpawnTime>this.blockInterval) { 
@@ -2553,6 +2645,7 @@
                             this.healthBoost.deactivate(); 
                             game.audio.playHealthPickup(); 
                             game.particles.spawnExplosion(this.healthBoost.pos.x,this.healthBoost.pos.y,20,'#00ff00',4); 
+                            Utils.vibrate(50);
                         } 
                     } 
                 } 
@@ -2588,64 +2681,100 @@
             }
             
             setupListeners() { 
-                window.addEventListener('keydown',(e)=>{ this.keys[e.code]=true; }); 
+                // Keyboard
+                window.addEventListener('keydown',(e)=>{ 
+                    this.keys[e.code]=true; 
+                    if(['KeyE', 'Space'].includes(e.code)) {
+                        e.preventDefault();
+                    }
+                }); 
                 window.addEventListener('keyup',(e)=>{ this.keys[e.code]=false; }); 
                 
+                // Prevent default touch behaviors globally
+                document.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                }, {passive: false});
+                
+                // Prevent context menu on long press
+                window.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    return false;
+                });
+                
+                // Double-tap zoom prevention
+                let lastTouchEnd = 0;
+                document.addEventListener('touchend', (e) => {
+                    const now = Date.now();
+                    if (now - lastTouchEnd <= 300) {
+                        e.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, {passive: false});
+                
+                // Touch - Joystick with improved tracking
                 const joystickArea = document.getElementById('joystickArea');
                 const joystickHandle = document.getElementById('joystickHandle');
                 
                 if (joystickArea) {
-                    joystickArea.addEventListener('touchstart', (e) => {
+                    const handleTouchStart = (e) => {
                         e.preventDefault();
-                        e.stopPropagation();
                         const touch = e.changedTouches[0];
                         const rect = joystickArea.getBoundingClientRect();
                         const centerX = rect.left + rect.width / 2;
                         const centerY = rect.top + rect.height / 2;
                         
-                        this.mobileJoystick.identifier = touch.identifier;
-                        this.mobileJoystick.startPos = new Vector2(centerX, centerY);
-                        this.mobileJoystick.currentPos = new Vector2(touch.clientX, touch.clientY);
-                        this.mobileJoystick.active = true;
-                        this.updateJoystickDirection();
-                    }, {passive: false});
+                        const dist = Math.sqrt(
+                            Math.pow(touch.clientX - centerX, 2) + 
+                            Math.pow(touch.clientY - centerY, 2)
+                        );
+                        
+                        if (dist < rect.width / 2) {
+                            this.mobileJoystick.identifier = touch.identifier;
+                            this.mobileJoystick.startPos = new Vector2(centerX, centerY);
+                            this.mobileJoystick.currentPos = new Vector2(touch.clientX, touch.clientY);
+                            this.mobileJoystick.active = true;
+                            if (joystickHandle) joystickHandle.classList.add('active');
+                            this.updateJoystickDirection();
+                        }
+                    };
                     
-                    joystickArea.addEventListener('touchmove', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
+                    const handleTouchMove = (e) => {
                         if (!this.mobileJoystick.active) return;
                         
                         for (let i = 0; i < e.changedTouches.length; i++) {
                             if (e.changedTouches[i].identifier === this.mobileJoystick.identifier) {
+                                e.preventDefault();
                                 const touch = e.changedTouches[i];
                                 this.mobileJoystick.currentPos = new Vector2(touch.clientX, touch.clientY);
                                 this.updateJoystickDirection();
                                 break;
                             }
                         }
-                    }, {passive: false});
+                    };
                     
-                    const endJoystick = (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
+                    const handleTouchEnd = (e) => {
+                        if (!this.mobileJoystick.active) return;
+                        
                         for (let i = 0; i < e.changedTouches.length; i++) {
                             if (e.changedTouches[i].identifier === this.mobileJoystick.identifier) {
+                                e.preventDefault();
                                 this.mobileJoystick.active = false;
                                 this.mobileJoystick.direction = new Vector2(0, 0);
                                 this.mobileJoystick.identifier = null;
                                 
                                 if (joystickHandle) {
+                                    joystickHandle.classList.remove('active');
                                     joystickHandle.style.transform = 'translate(-50%, -50%)';
-                                    joystickHandle.style.left = '50%';
-                                    joystickHandle.style.top = '50%';
                                 }
                                 break;
                             }
                         }
                     };
                     
-                    joystickArea.addEventListener('touchend', endJoystick, {passive: false});
-                    joystickArea.addEventListener('touchcancel', endJoystick, {passive: false});
+                    joystickArea.addEventListener('touchstart', handleTouchStart, {passive: false});
+                    document.addEventListener('touchmove', handleTouchMove, {passive: false});
+                    document.addEventListener('touchend', handleTouchEnd, {passive: false});
+                    document.addEventListener('touchcancel', handleTouchEnd, {passive: false});
                 }
             }
             
@@ -2656,11 +2785,13 @@
                 const dy = this.mobileJoystick.currentPos.y - this.mobileJoystick.startPos.y;
                 const distance = Math.sqrt(dx*dx + dy*dy);
                 
+                // Deadzone
                 if (distance < CONFIG.MOBILE.JOYSTICK_DEADZONE) {
                     this.mobileJoystick.direction = new Vector2(0, 0);
                     return;
                 }
                 
+                // Clamp to max distance
                 const maxDist = CONFIG.MOBILE.JOYSTICK_MAX_DIST;
                 const clampedDist = Math.min(distance, maxDist);
                 const angle = Math.atan2(dy, dx);
@@ -2670,6 +2801,7 @@
                     Math.sin(angle) * (clampedDist / maxDist)
                 );
                 
+                // Update visual handle
                 const joystickHandle = document.getElementById('joystickHandle');
                 if (joystickHandle) {
                     const moveX = Math.cos(angle) * clampedDist;
@@ -2685,17 +2817,24 @@
             constructor(canvas) { 
                 this.canvas=canvas; 
                 this.ctx=canvas.getContext('2d'); 
-                this.resize(); 
+                this.dpr = window.devicePixelRatio || 1;
                 this.shakeAmount=0; 
                 this.shakeDecay=0.9; 
+                this.resize(); 
                 window.addEventListener('resize',()=>this.resize()); 
             }
+            
             resize() { 
-                const wrapper = document.getElementById('game-wrapper');
-                this.canvas.width = wrapper.clientWidth;
-                this.canvas.height = wrapper.clientHeight;
+                const rect = this.canvas.parentElement.getBoundingClientRect();
+                this.canvas.width = rect.width * this.dpr;
+                this.canvas.height = rect.height * this.dpr;
+                this.canvas.style.width = rect.width + 'px';
+                this.canvas.style.height = rect.height + 'px';
+                this.ctx.scale(this.dpr, this.dpr);
             }
+            
             shakeScreen(amount) { this.shakeAmount=amount; }
+            
             beginFrame() { 
                 this.ctx.save(); 
                 if(this.shakeAmount>0.5) { 
@@ -2706,11 +2845,14 @@
                 }
                 this.ctx.shadowBlur = 0;
             }
+            
             endFrame() { this.ctx.restore(); }
+            
             drawBackground() { 
                 const ctx=this.ctx; 
+                const dims = this.getDimensions();
                 ctx.fillStyle=CONFIG.COLORS.BACKGROUND; 
-                ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+                ctx.fillRect(0,0,dims.width,dims.height);
                 
                 ctx.strokeStyle=CONFIG.COLORS.GRID; 
                 ctx.lineWidth=1; 
@@ -2719,18 +2861,25 @@
                       offsetY=(Date.now()/50)%gridSize;
                 
                 ctx.beginPath();
-                for(let x=offsetX; x<this.canvas.width; x+=gridSize) { 
+                for(let x=offsetX; x<dims.width; x+=gridSize) { 
                     ctx.moveTo(x,0); 
-                    ctx.lineTo(x,this.canvas.height); 
+                    ctx.lineTo(x,dims.height); 
                 } 
-                for(let y=offsetY; y<this.canvas.height; y+=gridSize) { 
+                for(let y=offsetY; y<dims.height; y+=gridSize) { 
                     ctx.moveTo(0,y); 
-                    ctx.lineTo(this.canvas.width,y); 
+                    ctx.lineTo(dims.width,y); 
                 }
                 ctx.stroke();
             }
+            
             getContext() { return this.ctx; }
-            getDimensions() { return {width:this.canvas.width, height:this.canvas.height}; }
+            
+            getDimensions() { 
+                return {
+                    width: this.canvas.width / this.dpr, 
+                    height: this.canvas.height / this.dpr
+                }; 
+            }
         }
 
         class UIManager {
@@ -2760,166 +2909,126 @@
                     mobileBoostText:document.getElementById('mobileBoostText'),
                     boostCooldownOverlay:document.getElementById('boostCooldownOverlay'),
                     deviceIndicator:document.getElementById('deviceIndicator'),
-                    orientationWarning:document.getElementById('orientation-warning')
+                    orientationWarning:document.getElementById('orientation-warning'),
+                    pauseOverlay:document.getElementById('pauseOverlay')
                 }; 
                 this.selectedBoost=null;
                 this.isMobile = Utils.isMobile();
                 this.setupEventListeners(); 
                 this.checkOrientation();
-                this.applyMobileMode();
                 
                 if (this.isMobile) {
                     this.elements.deviceIndicator.textContent = 'Mobile Mode';
-                    const mobileHint = document.querySelector('.mobile-hint');
-                    const desktopHint = document.querySelector('.desktop-hint');
-                    if(mobileHint) mobileHint.style.display = 'inline';
-                    if(desktopHint) desktopHint.style.display = 'none';
-                }
-            }
-            
-            applyMobileMode() {
-                if (this.isMobile) {
-                    document.body.classList.add('mobile-mode');
+                    document.querySelector('.mobile-hint').style.display = 'inline';
+                    document.querySelector('.desktop-hint').style.display = 'none';
                 }
             }
             
             checkOrientation() {
                 if (this.isMobile && Utils.isPortrait()) {
-                    if(this.elements.orientationWarning) {
-                        this.elements.orientationWarning.classList.add('active');
-                    }
+                    this.elements.orientationWarning.classList.add('active');
                 } else {
-                    if(this.elements.orientationWarning) {
-                        this.elements.orientationWarning.classList.remove('active');
-                    }
+                    this.elements.orientationWarning.classList.remove('active');
                 }
             }
             
             setupEventListeners() { 
-                window.addEventListener('resize', () => this.checkOrientation());
-                window.addEventListener('orientationchange', () => this.checkOrientation());
+                // Handle orientation changes
+                window.addEventListener('resize', () => {
+                    this.checkOrientation();
+                    setTimeout(() => game.renderer.resize(), 100);
+                });
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(() => {
+                        this.checkOrientation();
+                        game.renderer.resize();
+                    }, 200);
+                });
+                
+                // Pause/resume on visibility change
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden && (game.state === 'playing' || game.state === 'boss_fight')) {
+                        game.pause();
+                    } else if (!document.hidden && game.paused) {
+                        game.resume();
+                    }
+                });
                 
                 const addClickSound = (id) => {
                     const btn = document.getElementById(id);
                     if(btn) {
-                        btn.addEventListener('click', () => {
-                            if(game && game.audio) game.audio.playButtonClick();
-                        });
+                        btn.addEventListener('click', () => game.audio.playButtonClick());
                     }
                 };
                 addClickSound('playBtn');
                 addClickSound('boostBtn');
                 addClickSound('creditsBtn');
                 
-                const playBtn = document.getElementById('playBtn');
-                if(playBtn) {
-                    playBtn.addEventListener('click',()=> this.startGameTransition());
-                }
-                
-                const creditsBtn = document.getElementById('creditsBtn');
-                if(creditsBtn) {
-                    creditsBtn.addEventListener('click',()=> this.showCredits());
-                }
-                
-                const boostBtn = document.getElementById('boostBtn');
-                if(boostBtn) {
-                    boostBtn.addEventListener('click',()=> this.showBoostScreen());
-                }
-                
+                document.getElementById('playBtn').addEventListener('click',()=> this.startGameTransition());
+                document.getElementById('creditsBtn').addEventListener('click',()=> this.showCredits());
+                document.getElementById('boostBtn').addEventListener('click',()=> this.showBoostScreen());
                 addClickSound('backFromCredits');
-                const backFromCredits = document.getElementById('backFromCredits');
-                if(backFromCredits) {
-                    backFromCredits.addEventListener('click',()=> this.hideCredits());
-                }
-                
+                document.getElementById('backFromCredits').addEventListener('click',()=> this.hideCredits());
                 addClickSound('backFromBoost');
-                const backFromBoost = document.getElementById('backFromBoost');
-                if(backFromBoost) {
-                    backFromBoost.addEventListener('click',()=> this.hideBoostScreen());
-                }
+                document.getElementById('backFromBoost').addEventListener('click',()=> this.hideBoostScreen());
                 
                 document.querySelectorAll('.boost-card').forEach(card => {
                     card.addEventListener('click',(e)=>{ 
-                        if(game && game.audio) game.audio.playButtonClick();
+                        game.audio.playButtonClick();
                         const boostType=card.dataset.boost;
                         this.selectBoost(boostType);
                     });
                 });
-                
                 addClickSound('retryBtn');
-                const retryBtn = document.getElementById('retryBtn');
-                if(retryBtn) {
-                    retryBtn.addEventListener('click',()=> this.retryGame());
-                }
-                
                 addClickSound('menuBtnGameOver');
-                const menuBtnGameOver = document.getElementById('menuBtnGameOver');
-                if(menuBtnGameOver) {
-                    menuBtnGameOver.addEventListener('click',()=> this.returnToMenu());
-                }
-                
                 addClickSound('playAgainBtn');
-                const playAgainBtn = document.getElementById('playAgainBtn');
-                if(playAgainBtn) {
-                    playAgainBtn.addEventListener('click',()=> this.retryGame());
-                }
-                
                 addClickSound('menuBtnWin');
-                const menuBtnWin = document.getElementById('menuBtnWin');
-                if(menuBtnWin) {
-                    menuBtnWin.addEventListener('click',()=> this.returnToMenu());
-                }
                 
-                const muteBtn = document.getElementById('muteBtn');
-                if(muteBtn) {
-                    muteBtn.addEventListener('click', () => {
-                        if(game && game.audio) game.audio.toggleMute();
-                    });
-                }
+                document.getElementById('retryBtn').addEventListener('click',()=> this.retryGame());
+                document.getElementById('menuBtnGameOver').addEventListener('click',()=> this.returnToMenu());
+                document.getElementById('playAgainBtn').addEventListener('click',()=> this.retryGame());
+                document.getElementById('menuBtnWin').addEventListener('click',()=> this.returnToMenu());
+                document.getElementById('muteBtn').addEventListener('click', () => game.audio.toggleMute());
                 
-                // Enhanced mobile boost button handling
+                // Mobile boost button with improved touch response
                 if (this.elements.mobileBoostBtn) {
-                    const handleBoostStart = (e) => {
-                        if(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                        }
-                        if(this.elements.mobileBoostBtn) {
-                            this.elements.mobileBoostBtn.style.transform = this.isMobile ? 'scale(0.60) scale(0.95)' : 'scale(0.95)';
-                        }
-                        if (game && game.player && game.player.selectedBoost && game.player.activateBoost(Date.now())) {
-                            if(game.audio) game.audio.playBoostActivate();
-                        }
-                    };
-                    
-                    const handleBoostEnd = (e) => {
-                        if(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                        }
-                        if(this.elements.mobileBoostBtn) {
-                            this.elements.mobileBoostBtn.style.transform = this.isMobile ? 'scale(0.60)' : 'scale(1)';
+                    const handleBoost = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (game.player && game.player.selectedBoost) {
+                            if (game.player.activateBoost(Date.now())) {
+                                game.audio.playBoostActivate();
+                                this.elements.mobileBoostBtn.style.transform = 'scale(0.9)';
+                                setTimeout(() => {
+                                    this.elements.mobileBoostBtn.style.transform = '';
+                                }, 100);
+                            }
                         }
                     };
                     
-                    this.elements.mobileBoostBtn.addEventListener('touchstart', handleBoostStart, {passive: false});
-                    this.elements.mobileBoostBtn.addEventListener('touchend', handleBoostEnd, {passive: false});
-                    this.elements.mobileBoostBtn.addEventListener('mousedown', handleBoostStart);
-                    this.elements.mobileBoostBtn.addEventListener('mouseup', handleBoostEnd);
-                    this.elements.mobileBoostBtn.addEventListener('mouseleave', handleBoostEnd);
+                    this.elements.mobileBoostBtn.addEventListener('touchstart', handleBoost, {passive: false});
+                    this.elements.mobileBoostBtn.addEventListener('mousedown', handleBoost);
+                }
+                
+                // Pause overlay click to resume
+                if (this.elements.pauseOverlay) {
+                    this.elements.pauseOverlay.addEventListener('click', () => {
+                        if (game.paused) game.resume();
+                    });
+                    this.elements.pauseOverlay.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        if (game.paused) game.resume();
+                    }, {passive: false});
                 }
             }
             
             selectBoost(type) {
                 this.selectedBoost=type;
                 document.querySelectorAll('.boost-card').forEach(c=>c.classList.remove('selected'));
-                const card = document.getElementById('boost'+type.charAt(0).toUpperCase()+type.slice(1));
-                if(card) card.classList.add('selected');
+                document.getElementById('boost'+type.charAt(0).toUpperCase()+type.slice(1)).classList.add('selected');
                 const names={health:'Health Regen', speed:'Speed Boost', invincible:'Invincibility'};
-                if(this.elements.selectedBoostName) {
-                    this.elements.selectedBoostName.textContent=names[type] || 'Tidak Ada';
-                }
-                if(game && game.player) game.player.selectedBoost=type;
+                this.elements.selectedBoostName.textContent=names[type];
+                if(game.player) game.player.selectedBoost=type;
                 
                 if (this.elements.mobileBoostIcon) {
                     const icons = {health: '♥', speed: '⚡', invincible: '♠'};
@@ -2927,110 +3036,61 @@
                 }
             }
             
-            showBoostScreen() { 
-                if(this.elements.boostScreen) {
-                    this.elements.boostScreen.classList.add('active'); 
-                }
-            }
-            hideBoostScreen() { 
-                if(this.elements.boostScreen) {
-                    this.elements.boostScreen.classList.remove('active'); 
-                }
-            }
+            showBoostScreen() { this.elements.boostScreen.classList.add('active'); }
+            hideBoostScreen() { this.elements.boostScreen.classList.remove('active'); }
             showMainMenu() { 
-                if(this.elements.mainMenu) {
-                    this.elements.mainMenu.classList.remove('hidden'); 
-                }
-                if(this.elements.gameUI) {
-                    this.elements.gameUI.classList.remove('active'); 
-                }
-                if(this.elements.gameOverScreen) {
-                    this.elements.gameOverScreen.classList.remove('active'); 
-                }
-                if(this.elements.winScreen) {
-                    this.elements.winScreen.classList.remove('active');
-                }
-                if (this.isMobile && this.elements.mobileControls) {
+                this.elements.mainMenu.classList.remove('hidden'); 
+                this.elements.gameUI.classList.remove('active'); 
+                this.elements.gameOverScreen.classList.remove('active'); 
+                this.elements.winScreen.classList.remove('active');
+                if (this.isMobile) {
                     this.elements.mobileControls.classList.remove('active');
                 }
             }
-            hideMainMenu() { 
-                if(this.elements.mainMenu) {
-                    this.elements.mainMenu.classList.add('hidden'); 
-                }
-            }
-            showCredits() { 
-                if(this.elements.creditsScreen) {
-                    this.elements.creditsScreen.classList.add('active'); 
-                }
-            }
-            hideCredits() { 
-                if(this.elements.creditsScreen) {
-                    this.elements.creditsScreen.classList.remove('active'); 
-                }
-            }
+            hideMainMenu() { this.elements.mainMenu.classList.add('hidden'); }
+            showCredits() { this.elements.creditsScreen.classList.add('active'); }
+            hideCredits() { this.elements.creditsScreen.classList.remove('active'); }
             
             startGameTransition() { 
-                const title=document.querySelector('.game-title');
-                const subtitle=document.querySelector('.game-subtitle');
-                if(title) {
-                    title.style.transition='all 1s ease'; 
-                    title.style.transform='translate(35vw,-35vh) scale(0.5)'; 
-                    title.style.opacity='0.3';
+                const title=document.querySelector('.game-title'), subtitle=document.querySelector('.game-subtitle');
+                title.style.transition='all 1s ease'; subtitle.style.transition='all 1s ease';
+                title.style.transform='translate(35vw,-35vh) scale(0.5)'; title.style.opacity='0.3';
+                subtitle.style.transform='translate(35vw,-35vh) scale(0.5)'; subtitle.style.opacity='0';
+                document.querySelector('.menu-buttons').style.opacity='0';
+                
+                // Request fullscreen on mobile for better experience
+                if (this.isMobile && document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(e => {});
                 }
-                if(subtitle) {
-                    subtitle.style.transition='all 1s ease';
-                    subtitle.style.transform='translate(35vw,-35vh) scale(0.5)'; 
-                    subtitle.style.opacity='0';
-                }
-                const menuButtons = document.querySelector('.menu-buttons');
-                if(menuButtons) menuButtons.style.opacity='0';
                 
                 setTimeout(()=>{
                     this.hideMainMenu(); 
-                    if(this.elements.gameUI) {
-                        this.elements.gameUI.classList.add('active'); 
-                    }
-                    if (this.isMobile && this.elements.mobileControls) {
+                    this.elements.gameUI.classList.add('active'); 
+                    if (this.isMobile) {
                         this.elements.mobileControls.classList.add('active');
                     }
-                    if(game) game.start();
+                    game.start();
                     setTimeout(()=>{
-                        if(title) {
-                            title.style.transform=''; 
-                            title.style.opacity=''; 
-                            title.style.transition='';
-                        }
-                        if(subtitle) {
-                            subtitle.style.transform=''; 
-                            subtitle.style.opacity=''; 
-                            subtitle.style.transition='';
-                        }
-                        if(menuButtons) menuButtons.style.opacity='';
+                        title.style.transform=''; title.style.opacity=''; title.style.transition='';
+                        subtitle.style.transform=''; subtitle.style.opacity=''; subtitle.style.transition='';
+                        document.querySelector('.menu-buttons').style.opacity='';
                     },1000);
                 },800); 
             }
             
             updateHealth(hp,maxHp) { 
-                if(!this.elements.healthBarFill || !this.elements.healthText) return;
                 const percent=(hp/maxHp)*100; 
                 this.elements.healthBarFill.style.width=`${percent}%`; 
                 this.elements.healthText.textContent=`${Math.ceil(percent)}%`; 
-                const healthPanel = document.querySelector('.health-panel');
-                if(healthPanel) {
-                    healthPanel.classList.toggle('critical', percent<=30);
-                }
+                document.querySelector('.health-panel').classList.toggle('critical', percent<=30);
             }
             
             updateCountdown(seconds) { 
-                if(!this.elements.countdownTimer) return;
                 this.elements.countdownTimer.textContent=Math.max(0,Math.ceil(seconds)); 
                 this.elements.countdownTimer.style.color=seconds<=10?'#ff3333':'#ffffff';
             }
             
             updateBoostUI(player, currentTime) {
-                if(!player || !this.elements.boostPanel) return;
-                
                 if(!player.selectedBoost) {
                     this.elements.boostPanel.style.display='none';
                     if (this.elements.mobileBoostBtn) {
@@ -3039,12 +3099,12 @@
                     return;
                 }
                 
-                this.elements.boostPanel.style.display='flex';
+                // Desktop UI
+                this.elements.boostPanel.style.display=this.isMobile ? 'none' : 'flex';
                 const names={health:'HEAL', speed:'SPEED', invincible:'SHIELD'};
-                if(this.elements.boostTypeName) {
-                    this.elements.boostTypeName.textContent=names[player.selectedBoost] || 'BOOST';
-                }
+                this.elements.boostTypeName.textContent=names[player.selectedBoost];
                 
+                // Mobile UI
                 if (this.elements.mobileBoostBtn) {
                     this.elements.mobileBoostBtn.style.display = 'flex';
                 }
@@ -3052,63 +3112,46 @@
                 const isReady=currentTime>=player.boostCooldownEnd;
                 const isActive=player.isBoostActive && currentTime<player.boostActiveEnd;
                 
-                if(this.elements.boostKey) {
-                    if(isActive || isReady) {
-                        this.elements.boostKey.className='boost-key ready';
-                    } else {
-                        this.elements.boostKey.className='boost-key cooldown';
-                    }
-                }
-                
-                if(this.elements.boostStatus) {
-                    if(isActive) {
-                        this.elements.boostStatus.textContent='ACTIVE';
-                        this.elements.boostStatus.style.color='#ffffff';
-                    } else if(isReady) {
-                        this.elements.boostStatus.textContent='READY (Press E)';
-                        this.elements.boostStatus.style.color='#ffffff';
-                    } else {
-                        this.elements.boostStatus.textContent='COOLDOWN';
-                        this.elements.boostStatus.style.color='#666';
-                    }
-                }
-                
-                if(this.elements.cooldownFill) {
+                // Desktop
+                if(isActive) {
+                    this.elements.boostKey.className='boost-key ready';
+                    this.elements.boostStatus.textContent='ACTIVE';
+                    this.elements.boostStatus.style.color='#ffffff';
+                    const duration=player.getBoostDuration();
+                    const elapsed=currentTime-(player.boostActiveEnd-duration);
+                    const pct=Math.max(0,100-(elapsed/duration*100));
+                    this.elements.cooldownFill.style.width=pct+'%';
+                } else if(isReady) {
+                    this.elements.boostKey.className='boost-key ready';
+                    this.elements.boostStatus.textContent='READY (Press E)';
+                    this.elements.boostStatus.style.color='#ffffff';
+                    this.elements.cooldownFill.style.width='100%';
+                } else {
+                    this.elements.boostKey.className='boost-key cooldown';
+                    this.elements.boostStatus.textContent='COOLDOWN';
+                    this.elements.boostStatus.style.color='#666';
                     const cooldown=player.getBoostCooldown();
-                    let pct=100;
-                    if(!isReady && !isActive) {
-                        const elapsed=currentTime-(player.boostCooldownEnd-cooldown);
-                        pct=Math.max(0,100-(elapsed/cooldown*100));
-                    } else if(isActive) {
-                        const duration=player.getBoostDuration();
-                        const elapsed=currentTime-(player.boostActiveEnd-duration);
-                        pct=Math.max(0,100-(elapsed/duration*100));
-                    }
+                    const elapsed=currentTime-(player.boostCooldownEnd-cooldown);
+                    const pct=Math.max(0,100-(elapsed/cooldown*100));
                     this.elements.cooldownFill.style.width=pct+'%';
                 }
                 
-                // Update mobile boost button visual
-                if (this.elements.mobileBoostBtn && this.elements.boostCooldownOverlay) {
+                // Mobile
+                if (this.elements.mobileBoostBtn) {
                     if (isActive) {
                         this.elements.mobileBoostBtn.className = 'boost-button ready';
-                        if(this.elements.mobileBoostText) {
-                            this.elements.mobileBoostText.textContent = 'ACTIVE';
-                        }
+                        this.elements.mobileBoostText.textContent = 'ACTIVE';
                         const duration=player.getBoostDuration();
                         const elapsed=currentTime-(player.boostActiveEnd-duration);
                         const pct=Math.max(0,100-(elapsed/duration*100));
                         this.elements.boostCooldownOverlay.style.setProperty('--cooldown-percent', `${pct}%`);
                     } else if (isReady) {
                         this.elements.mobileBoostBtn.className = 'boost-button ready';
-                        if(this.elements.mobileBoostText) {
-                            this.elements.mobileBoostText.textContent = 'BOOST';
-                        }
+                        this.elements.mobileBoostText.textContent = 'BOOST';
                         this.elements.boostCooldownOverlay.style.setProperty('--cooldown-percent', '0%');
                     } else {
                         this.elements.mobileBoostBtn.className = 'boost-button cooldown';
-                        if(this.elements.mobileBoostText) {
-                            this.elements.mobileBoostText.textContent = 'WAIT';
-                        }
+                        this.elements.mobileBoostText.textContent = 'WAIT';
                         const cooldown=player.getBoostCooldown();
                         const elapsed=currentTime-(player.boostCooldownEnd-cooldown);
                         const pct=Math.max(0,100-(elapsed/cooldown*100));
@@ -3118,51 +3161,43 @@
             }
             
             showDamageFlash() { 
-                if(this.elements.damageFlash) {
-                    this.elements.damageFlash.classList.add('active'); 
-                    setTimeout(()=>{
-                        if(this.elements.damageFlash) {
-                            this.elements.damageFlash.classList.remove('active');
-                        }
-                    },300); 
-                }
+                this.elements.damageFlash.classList.add('active'); 
+                setTimeout(()=>this.elements.damageFlash.classList.remove('active'),300); 
             }
             showGameOver() { 
-                if(this.elements.gameOverScreen) {
-                    this.elements.gameOverScreen.classList.add('active'); 
-                }
-                if (this.isMobile && this.elements.mobileControls) {
+                this.elements.gameOverScreen.classList.add('active'); 
+                if (this.isMobile) {
                     this.elements.mobileControls.classList.remove('active');
                 }
             }
             showWin() { 
-                if(this.elements.winScreen) {
-                    this.elements.winScreen.classList.add('active'); 
-                }
-                if (this.isMobile && this.elements.mobileControls) {
+                this.elements.winScreen.classList.add('active'); 
+                if (this.isMobile) {
                     this.elements.mobileControls.classList.remove('active');
                 }
             }
+            showPause() {
+                if (this.elements.pauseOverlay) {
+                    this.elements.pauseOverlay.classList.add('active');
+                }
+            }
+            hidePause() {
+                if (this.elements.pauseOverlay) {
+                    this.elements.pauseOverlay.classList.remove('active');
+                }
+            }
             retryGame() { 
-                if(this.elements.gameOverScreen) {
-                    this.elements.gameOverScreen.classList.remove('active'); 
-                }
-                if(this.elements.winScreen) {
-                    this.elements.winScreen.classList.remove('active'); 
-                }
-                if (this.isMobile && this.elements.mobileControls) {
+                this.elements.gameOverScreen.classList.remove('active'); 
+                this.elements.winScreen.classList.remove('active'); 
+                if (this.isMobile) {
                     this.elements.mobileControls.classList.add('active');
                 }
-                if(game) game.restart(); 
+                game.restart(); 
             }
             returnToMenu() { 
-                if(this.elements.gameOverScreen) {
-                    this.elements.gameOverScreen.classList.remove('active'); 
-                }
-                if(this.elements.winScreen) {
-                    this.elements.winScreen.classList.remove('active'); 
-                }
-                if(game) game.returnToMenu(); 
+                this.elements.gameOverScreen.classList.remove('active'); 
+                this.elements.winScreen.classList.remove('active'); 
+                game.returnToMenu(); 
             }
         }
 
@@ -3183,12 +3218,34 @@
                 this.gameTimer=0; 
                 this.bossStarted=false; 
                 this.isMobile = Utils.isMobile();
+                this.paused = false;
                 
                 this.audio.init();
                 this.audio.switchBGM('menu');
                 
                 this.loop=this.loop.bind(this); 
                 requestAnimationFrame(this.loop); 
+            }
+            
+            pause() {
+                if (!this.paused && (this.state === 'playing' || this.state === 'boss_fight')) {
+                    this.paused = true;
+                    this.ui.showPause();
+                    if (this.audio.currentBGM) {
+                        this.audio.currentBGM.volume = 0.1;
+                    }
+                }
+            }
+            
+            resume() {
+                if (this.paused) {
+                    this.paused = false;
+                    this.ui.hidePause();
+                    if (this.audio.currentBGM) {
+                        this.audio.currentBGM.volume = this.audio.bgmVolume;
+                    }
+                    this.lastTime = performance.now();
+                }
             }
             
             start() { 
@@ -3200,6 +3257,7 @@
                 this.particles.clear(); 
                 this.gameTimer=0; 
                 this.bossStarted=false; 
+                this.paused = false;
                 this.state='playing'; 
             }
             
@@ -3207,14 +3265,18 @@
             
             returnToMenu() { 
                 this.state='menu'; 
+                this.paused = false;
                 this.audio.switchBGM('menu');
                 this.ui.showMainMenu(); 
+                if (document.fullscreenElement && document.exitFullscreen) {
+                    document.exitFullscreen().catch(e => {});
+                }
             }
             
             startBossMode() { 
                 this.state='boss_transition'; 
                 this.audio.switchBGM('boss');
-                this.spawner.startBossMode(this.renderer.canvas.width,this.renderer.canvas.height); 
+                this.spawner.startBossMode(this.renderer.getDimensions().width, this.renderer.getDimensions().height); 
                 setTimeout(()=>this.state='boss_fight',2000); 
             }
             
@@ -3225,8 +3287,8 @@
                 this.renderer.shakeScreen(5); 
                 for(let i=0; i<5; i++) {
                     setTimeout(() => this.particles.spawnExplosion(
-                        Utils.randomRange(100,this.renderer.canvas.width-100),
-                        Utils.randomRange(100,this.renderer.canvas.height-100),
+                        Utils.randomRange(100,this.renderer.getDimensions().width-100),
+                        Utils.randomRange(100,this.renderer.getDimensions().height-100),
                         30,'#ffffff',6
                     ),i*200);
                 }
@@ -3243,6 +3305,7 @@
             }
             
             update(deltaTime) { 
+                if(this.paused) return;
                 if(this.state==='menu'||this.state==='gameover'||this.state==='win') return; 
                 const{width,height}=this.renderer.getDimensions(); 
                 this.gameTimer+=deltaTime; 
@@ -3262,17 +3325,11 @@
                     this.bossStarted=true; this.startBossMode(); 
                 } 
                 
-                if(this.player) {
-                    this.player.update(this.input,width,height,Date.now(),this.isMobile); 
-                }
-                if(this.spawner) {
-                    this.spawner.update(deltaTime,width,height,this.player); 
-                }
-                if(this.particles) {
-                    this.particles.update(); 
-                }
+                this.player.update(this.input,width,height,Date.now(),this.isMobile); 
+                this.spawner.update(deltaTime,width,height,this.player); 
+                this.particles.update(); 
                 
-                if(this.player && this.player.vel.mag()>0.1) { 
+                if(this.player.vel.mag()>0.1) { 
                     const trailCount=Math.floor(this.player.vel.mag()); 
                     for(let i=0;i<trailCount;i++) 
                         this.particles.spawnTrail(
@@ -3281,34 +3338,28 @@
                             'rgba(255,255,255,0.3)'
                         ); 
                 } 
-                
-                if(this.spawner && this.player) {
-                    this.spawner.checkCollisions(this.player); 
-                }
-                if(this.player && this.player.hp<=0) this.gameOver(); 
-                
-                if(this.ui && this.player) {
-                    this.ui.updateHealth(this.player.hp,this.player.maxHp); 
-                    this.ui.updateBoostUI(this.player,Date.now());
-                }
+                this.spawner.checkCollisions(this.player); 
+                if(this.player.hp<=0) this.gameOver(); 
+                this.ui.updateHealth(this.player.hp,this.player.maxHp); 
+                this.ui.updateBoostUI(this.player,Date.now());
             }
             
             draw() { 
-                if(!this.renderer) return;
                 this.renderer.drawBackground(); 
                 this.renderer.beginFrame(); 
                 const ctx=this.renderer.getContext(); 
                 if(this.player && (this.state==='playing'||this.state==='boss_transition'||this.state==='boss_fight')) { 
-                    if(this.spawner) this.spawner.draw(ctx); 
-                    if(this.particles) this.particles.draw(ctx); 
+                    this.spawner.draw(ctx); 
+                    this.particles.draw(ctx); 
                     this.player.draw(ctx); 
                     if(this.state==='boss_transition') { 
+                        const dims = this.renderer.getDimensions();
                         ctx.fillStyle='#ffffff'; 
                         ctx.font='bold 48px Courier New'; 
                         ctx.textAlign='center'; 
                         ctx.shadowBlur = 20;
                         ctx.shadowColor = 'rgba(255,255,255,0.8)';
-                        ctx.fillText('BOSS APPROACHING...',this.renderer.canvas.width/2,this.renderer.canvas.height/2); 
+                        ctx.fillText('BOSS APPROACHING...', dims.width/2, dims.height/2); 
                         ctx.shadowBlur = 0;
                     } 
                 } 
@@ -3316,32 +3367,19 @@
             }
             
             loop(timestamp) { 
-                try {
-                    const deltaTime=timestamp-this.lastTime; 
-                    this.lastTime=timestamp; 
-                    this.accumulator+=deltaTime; 
-                    while(this.accumulator>=this.timeStep) { 
-                        this.update(this.timeStep); 
-                        this.accumulator-=this.timeStep; 
-                    } 
-                    this.draw(); 
-                } catch(e) {
-                    console.error('Game loop error:', e);
-                }
+                const deltaTime=timestamp-this.lastTime; 
+                this.lastTime=timestamp; 
+                this.accumulator+=deltaTime; 
+                while(this.accumulator>=this.timeStep) { 
+                    this.update(this.timeStep); 
+                    this.accumulator-=this.timeStep; 
+                } 
+                this.draw(); 
                 requestAnimationFrame(this.loop); 
             }
         }
 
-        // Initialize game when DOM is ready
-        let game;
-        document.addEventListener('DOMContentLoaded', () => {
-            try {
-                game = new Game();
-                console.log('Game initialized successfully');
-            } catch(e) {
-                console.error('Failed to initialize game:', e);
-            }
-        });
+        const game=new Game();
     </script>
 </body>
 </html>
