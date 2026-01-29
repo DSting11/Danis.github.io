@@ -1,5 +1,5 @@
 
-# Update the HTML with fixes for mobile responsiveness and timing changes
+# Update the HTML with rounded frame and mobile scaling
 
 html_content = '''<!DOCTYPE html>
 <html lang="id">
@@ -34,6 +34,7 @@ html_content = '''<!DOCTYPE html>
             --joystick-bg: rgba(255, 255, 255, 0.15);
             --joystick-handle: rgba(255, 255, 255, 0.9);
             --boost-btn-bg: rgba(255, 255, 255, 0.2);
+            --game-scale: 1;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -49,14 +50,52 @@ html_content = '''<!DOCTYPE html>
             touch-action: none;
         }
 
-        #game-container {
-            width: 100vw;
-            height: 100vh;
+        #game-wrapper {
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(95vw, 95vh * 16/9);
+            height: min(95vw * 9/16, 95vh);
+            max-width: min(95vw, 95vh * 16/9);
+            max-height: min(95vw * 9/16, 95vh);
+            background: #000;
+            border: 3px solid #ffffff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(255,255,255,0.2), inset 0 0 20px rgba(255,255,255,0.05);
+        }
+
+        /* Mobile scaling - 35% smaller (0.65 scale) */
+        body.mobile-mode #game-wrapper {
+            transform: translate(-50%, -50%) scale(0.65);
+        }
+
+        body.mobile-mode .hud-panel {
+            transform: scale(0.65);
+        }
+
+        body.mobile-mode #mobileControls {
+            transform: scale(0.65);
+        }
+
+        body.mobile-mode #muteBtn {
+            transform: scale(0.65);
+            bottom: 10px;
+            right: 10px;
+        }
+
+        body.mobile-mode #muteBtn:hover {
+            transform: scale(0.75);
+        }
+
+        #game-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
             overflow: hidden;
             background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            border-radius: 21px;
         }
 
         canvas {
@@ -64,9 +103,9 @@ html_content = '''<!DOCTYPE html>
             position: absolute;
             top: 0;
             left: 0;
-            z-index: 1;
             width: 100%;
             height: 100%;
+            z-index: 1;
             filter: contrast(1.1) brightness(1.1);
         }
 
@@ -115,6 +154,7 @@ html_content = '''<!DOCTYPE html>
             transition: opacity 0.8s ease, visibility 0.8s ease;
             overflow: hidden;
             padding: 20px;
+            border-radius: 21px;
         }
 
         #main-menu::before {
@@ -148,9 +188,9 @@ html_content = '''<!DOCTYPE html>
         }
 
         .game-title { 
-            font-size: clamp(40px, 12vw, 100px); 
+            font-size: clamp(40px, 10vw, 80px); 
             font-weight: 900; 
-            letter-spacing: clamp(5px, 2vw, 15px); 
+            letter-spacing: clamp(5px, 1.5vw, 15px); 
             color: #ffffff; 
             text-transform: uppercase; 
             animation: strong-pulse 3s infinite;
@@ -179,7 +219,7 @@ html_content = '''<!DOCTYPE html>
         }
 
         .game-subtitle { 
-            font-size: clamp(14px, 4vw, 24px); 
+            font-size: clamp(16px, 3vw, 24px); 
             color: #888; 
             letter-spacing: clamp(3px, 1vw, 8px); 
             text-transform: uppercase; 
@@ -189,7 +229,7 @@ html_content = '''<!DOCTYPE html>
         }
 
         .device-indicator {
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: clamp(12px, 2.5vw, 14px);
             color: #666;
             margin-bottom: 20px;
             padding: 8px 16px;
@@ -203,13 +243,13 @@ html_content = '''<!DOCTYPE html>
             display: flex; 
             flex-direction: column; 
             gap: 15px; 
-            width: min(350px, 85vw);
+            width: min(320px, 70%);
             z-index: 2;
         }
         
         .menu-btn, .boost-selected-display, .back-btn {
-            padding: clamp(15px, 4vw, 20px) clamp(20px, 5vw, 40px);
-            font-size: clamp(14px, 4vw, 16px);
+            padding: clamp(15px, 3vw, 20px) clamp(20px, 4vw, 40px);
+            font-size: clamp(14px, 3vw, 16px);
             color: #ffffff;
             background: rgba(255, 255, 255, 0.05);
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -256,7 +296,7 @@ html_content = '''<!DOCTYPE html>
         .boost-selected-display {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.5);
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: clamp(12px, 2.5vw, 14px);
             padding: 12px;
             text-align: center;
             color: #fff;
@@ -279,12 +319,13 @@ html_content = '''<!DOCTYPE html>
             transition: opacity 0.5s ease;
             overflow-y: auto;
             padding: 40px 20px;
+            border-radius: 21px;
         }
 
         #credits-screen.active, #boost-screen.active { display: flex; opacity: 1; }
 
         .screen-title { 
-            font-size: clamp(24px, 6vw, 42px); 
+            font-size: clamp(24px, 5vw, 42px); 
             margin-bottom: 30px; 
             text-transform: uppercase; 
             letter-spacing: 8px; 
@@ -308,7 +349,7 @@ html_content = '''<!DOCTYPE html>
             margin-bottom: 30px;
             padding: 0 10px;
             overflow-y: auto;
-            max-height: 60vh;
+            max-height: 50vh;
         }
 
         .credit-card {
@@ -322,7 +363,7 @@ html_content = '''<!DOCTYPE html>
             transition: all 0.3s ease;
             animation: fade-in 0.5s forwards;
             opacity: 0;
-            width: clamp(120px, 25vw, 160px);
+            width: clamp(110px, 20vw, 150px);
             flex-shrink: 0;
         }
 
@@ -372,7 +413,7 @@ html_content = '''<!DOCTYPE html>
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(32px, 8vw, 48px);
+            font-size: clamp(32px, 6vw, 48px);
             font-weight: 900;
             color: #ffffff;
             position: absolute;
@@ -383,7 +424,7 @@ html_content = '''<!DOCTYPE html>
         }
 
         .credit-name {
-            font-size: clamp(14px, 3.5vw, 18px);
+            font-size: clamp(14px, 3vw, 18px);
             font-weight: 700;
             color: #ffffff;
             margin-bottom: 4px;
@@ -394,7 +435,7 @@ html_content = '''<!DOCTYPE html>
         }
 
         .credit-role {
-            font-size: clamp(9px, 2.5vw, 12px);
+            font-size: clamp(9px, 2.2vw, 12px);
             color: #aaa;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -412,7 +453,7 @@ html_content = '''<!DOCTYPE html>
         }
 
         .boost-card {
-            width: clamp(140px, 27vw, 200px);
+            width: clamp(130px, 25vw, 180px);
             padding: 20px 15px;
             border: 2px solid rgba(255,255,255,0.2);
             border-radius: 16px;
@@ -444,19 +485,19 @@ html_content = '''<!DOCTYPE html>
         }
 
         .boost-icon { 
-            font-size: clamp(32px, 7vw, 48px); 
+            font-size: clamp(32px, 6vw, 48px); 
             margin-bottom: 12px; 
             filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
         }
         .boost-name { 
-            font-size: clamp(14px, 3.5vw, 18px); 
+            font-size: clamp(14px, 3vw, 18px); 
             font-weight: 700; 
             margin-bottom: 8px; 
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         .boost-desc { 
-            font-size: clamp(10px, 2.8vw, 12px); 
+            font-size: clamp(10px, 2.5vw, 12px); 
             color: #aaa; 
             line-height: 1.4; 
         }
@@ -475,27 +516,32 @@ html_content = '''<!DOCTYPE html>
 
         #game-ui.active { opacity: 1; }
 
-        .hud-panel { position: absolute; padding: 10px; pointer-events: auto; }
+        .hud-panel { 
+            position: absolute; 
+            padding: 10px; 
+            pointer-events: auto; 
+            transform-origin: top right;
+        }
+        
         .health-panel { 
-            top: 10px; 
-            right: 10px; 
-            width: clamp(150px, 35vw, 280px); 
+            top: 15px; 
+            right: 15px; 
+            width: 200px; 
             background: rgba(0,0,0,0.6);
             border: 1px solid rgba(255,255,255,0.3);
             border-radius: 12px;
         }
         
-        /* Mobile Controls - Fixed positioning relative to viewport */
+        /* Mobile Controls */
         .mobile-controls {
-            position: fixed;
+            position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: auto;
+            height: 100%;
             z-index: 100;
             pointer-events: none;
             display: none;
-            padding: 20px;
         }
 
         .mobile-controls.active {
@@ -503,19 +549,23 @@ html_content = '''<!DOCTYPE html>
         }
 
         .joystick-area {
-            position: fixed;
-            left: 20px;
-            bottom: 20px;
-            width: clamp(120px, 35vw, 150px);
-            height: clamp(120px, 35vw, 150px);
+            position: absolute;
+            left: 50px;
+            bottom: 40px;
+            width: 140px;
+            height: 140px;
             pointer-events: auto;
-            z-index: 101;
+            transform-origin: bottom left;
+        }
+
+        body.mobile-mode .joystick-area {
+            transform: scale(0.65);
         }
 
         .joystick-base {
             position: absolute;
-            width: 80%;
-            height: 80%;
+            width: 100%;
+            height: 100%;
             background: var(--joystick-bg);
             border: 2px solid rgba(255,255,255,0.3);
             border-radius: 50%;
@@ -528,8 +578,8 @@ html_content = '''<!DOCTYPE html>
 
         .joystick-handle {
             position: absolute;
-            width: 40%;
-            height: 40%;
+            width: 50px;
+            height: 50px;
             background: var(--joystick-handle);
             border: 2px solid rgba(0,0,0,0.3);
             border-radius: 50%;
@@ -541,11 +591,11 @@ html_content = '''<!DOCTYPE html>
         }
 
         .boost-button {
-            position: fixed;
-            right: 20px;
-            bottom: 30px;
-            width: clamp(80px, 22vw, 100px);
-            height: clamp(80px, 22vw, 100px);
+            position: absolute;
+            right: 40px;
+            bottom: 50px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             background: var(--boost-btn-bg);
             border: 3px solid rgba(255,255,255,0.5);
@@ -560,13 +610,21 @@ html_content = '''<!DOCTYPE html>
             transition: all 0.2s;
             user-select: none;
             -webkit-user-select: none;
-            z-index: 101;
+            transform-origin: bottom right;
+        }
+
+        body.mobile-mode .boost-button {
+            transform: scale(0.65);
         }
 
         .boost-button:active {
             transform: scale(0.95);
             background: rgba(255,255,255,0.3);
             box-shadow: 0 0 30px rgba(255,255,255,0.4);
+        }
+
+        body.mobile-mode .boost-button:active {
+            transform: scale(0.65) scale(0.95);
         }
 
         .boost-button.ready {
@@ -581,12 +639,12 @@ html_content = '''<!DOCTYPE html>
         }
 
         .boost-button-icon {
-            font-size: clamp(24px, 6vw, 32px);
+            font-size: 28px;
             margin-bottom: 2px;
         }
 
         .boost-button-text {
-            font-size: clamp(9px, 2.5vw, 11px);
+            font-size: 10px;
             color: #fff;
             font-weight: 700;
             text-transform: uppercase;
@@ -672,14 +730,14 @@ html_content = '''<!DOCTYPE html>
         }
 
         .countdown-panel {
-            top: 10px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
         }
 
         .countdown-display {
-            font-size: clamp(32px, 8vw, 48px);
+            font-size: clamp(36px, 6vw, 48px);
             font-weight: 900;
             color: #ffffff;
             font-family: 'Courier New', monospace;
@@ -692,7 +750,7 @@ html_content = '''<!DOCTYPE html>
         }
 
         .countdown-label { 
-            font-size: clamp(9px, 2.5vw, 12px); 
+            font-size: clamp(10px, 2vw, 12px); 
             text-transform: uppercase; 
             letter-spacing: 2px; 
             color: #888;
@@ -700,7 +758,7 @@ html_content = '''<!DOCTYPE html>
         }
 
         .health-label { 
-            font-size: clamp(10px, 3vw, 12px); 
+            font-size: 11px; 
             text-transform: uppercase; 
             letter-spacing: 1px; 
             color: #aaa; 
@@ -750,14 +808,15 @@ html_content = '''<!DOCTYPE html>
             opacity: 0;
             transition: opacity 0.5s ease;
             padding: 20px;
+            border-radius: 21px;
         }
 
         #game-over-screen.active, #win-screen.active { display: flex; opacity: 1; }
         .game-over-title, .win-title { 
-            font-size: clamp(36px, 10vw, 80px); 
+            font-size: clamp(40px, 8vw, 72px); 
             font-weight: 900; 
             text-transform: uppercase; 
-            letter-spacing: clamp(5px, 2vw, 10px); 
+            letter-spacing: clamp(5px, 1.5vw, 10px); 
             margin-bottom: 15px;
             color: #fff;
             text-align: center;
@@ -778,7 +837,7 @@ html_content = '''<!DOCTYPE html>
                 0 0 60px rgba(255,255,255,0.3);
         }
         .win-subtitle { 
-            font-size: clamp(16px, 5vw, 24px); 
+            font-size: clamp(18px, 4vw, 24px); 
             color: #aaa; 
             margin-bottom: 30px; 
             letter-spacing: 4px; 
@@ -794,7 +853,7 @@ html_content = '''<!DOCTYPE html>
         }
         .restart-btn, .menu-btn-gameover {
             padding: 15px 30px;
-            font-size: clamp(13px, 4vw, 16px);
+            font-size: clamp(14px, 3vw, 16px);
             background: transparent;
             color: #ffffff;
             border: 2px solid rgba(255,255,255,0.4);
@@ -828,21 +887,22 @@ html_content = '''<!DOCTYPE html>
             opacity: 0;
             pointer-events: none;
             mix-blend-mode: screen;
+            border-radius: 21px;
         }
         .damage-flash.active { opacity: 1; animation: flash 0.3s ease; }
         @keyframes flash { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
 
         #muteBtn {
-            position: fixed;
+            position: absolute;
             bottom: 20px;
             right: 20px;
             z-index: 1000;
             background: rgba(255,255,255,0.1);
             border: 2px solid rgba(255,255,255,0.3);
             border-radius: 50%;
-            width: clamp(45px, 12vw, 55px);
-            height: clamp(45px, 12vw, 55px);
-            font-size: clamp(18px, 5vw, 24px);
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -852,7 +912,7 @@ html_content = '''<!DOCTYPE html>
             backdrop-filter: blur(10px);
             touch-action: manipulation;
         }
-        #muteBtn:hover, #muteBtn:active { 
+        #muteBtn:hover { 
             transform: scale(1.1); 
             border-color: #ffffff;
             box-shadow: 0 0 20px rgba(255,255,255,0.3);
@@ -892,79 +952,6 @@ html_content = '''<!DOCTYPE html>
             50% { transform: rotate(90deg); }
         }
 
-        /* Simplified mobile adjustments using clamp */
-        @media (max-width: 768px) {
-            .health-panel {
-                width: 40vw;
-                min-width: 140px;
-                top: 10px;
-                right: 10px;
-                padding: 8px;
-            }
-            
-            .countdown-panel {
-                top: 10px;
-            }
-            
-            .boost-panel {
-                bottom: 160px;
-                transform: translateX(-50%) scale(0.85);
-            }
-            
-            .joystick-area {
-                left: 15px;
-                bottom: 15px;
-            }
-            
-            .boost-button {
-                right: 15px;
-                bottom: 25px;
-            }
-            
-            .credits-row {
-                gap: 10px;
-                padding: 0 5px;
-            }
-            
-            .credit-card {
-                width: 26vw;
-                min-width: 110px;
-                padding: 12px 8px;
-            }
-            
-            .boost-grid {
-                gap: 10px;
-            }
-            
-            .boost-card {
-                width: 26vw;
-                min-width: 130px;
-                padding: 15px 10px;
-            }
-        }
-
-        @media (max-height: 400px) {
-            .menu-header {
-                margin-bottom: 3vh;
-            }
-            
-            .game-subtitle {
-                margin-bottom: 10px;
-            }
-            
-            .menu-buttons {
-                gap: 8px;
-            }
-            
-            .joystick-area {
-                bottom: 10px;
-            }
-            
-            .boost-button {
-                bottom: 20px;
-            }
-        }
-
         body { cursor: crosshair; }
         .menu-btn, .back-btn, .restart-btn, .menu-btn-gameover, .boost-card { cursor: pointer; }
     </style>
@@ -976,179 +963,181 @@ html_content = '''<!DOCTYPE html>
         <p style="color: #888; font-size: clamp(14px, 4vw, 16px);">Game ini dimainkan dalam mode landscape (horizontal)</p>
     </div>
 
-    <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
-        <div id="damageFlash" class="damage-flash"></div>
-        
-        <button id="muteBtn">🔊</button>
-        
-        <div id="main-menu">
-            <div class="menu-header">
-                <h1 class="game-title">AVOIDE</h1>
-                <p class="game-subtitle">Kelompok 3</p>
-                <div class="device-indicator" id="deviceIndicator">Desktop Mode</div>
-            </div>
-            <div class="menu-buttons">
-                <button class="menu-btn" id="playBtn">Mulai Permainan</button>
-                <button class="menu-btn" id="boostBtn">Pilih Boost</button>
-                <div class="boost-selected-display" id="selectedBoostDisplay">
-                    Boost Aktif: <span id="selectedBoostName">Tidak Ada</span>
-                </div>
-                <button class="menu-btn" id="creditsBtn">Anggota</button>
-            </div>
-        </div>
-
-        <div id="credits-screen">
-            <h2 class="screen-title">Anggota Kelompok</h2>
+    <div id="game-wrapper">
+        <div id="game-container">
+            <canvas id="gameCanvas"></canvas>
+            <div id="damageFlash" class="damage-flash"></div>
             
-            <div class="credits-row">
-                <div class="credit-card" style="animation-delay: 0s;">
-                    <div class="photo-container">
-                        <img src="assets/images/danis.png" alt="Danis" class="credit-photo" 
-                             onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
-                        <div class="credit-fallback">D</div>
-                    </div>
-                    <div class="credit-name">Danis</div>
-                    <div class="credit-role">Logika & Algoritma</div>
-                </div>
-                
-                <div class="credit-card" style="animation-delay: 0.1s;">
-                    <div class="photo-container">
-                        <img src="assets/images/dip.png" alt="Dipta" class="credit-photo" 
-                             onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
-                        <div class="credit-fallback">D</div>
-                    </div>
-                    <div class="credit-name">Dipta</div>
-                    <div class="credit-role">Playtester</div>
-                </div>
-                
-                <div class="credit-card" style="animation-delay: 0.2s;">
-                    <div class="photo-container">
-                        <img src="assets/images/risky.png" alt="Risky" class="credit-photo" 
-                             onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
-                        <div class="credit-fallback">R</div>
-                    </div>
-                    <div class="credit-name">Risky</div>
-                    <div class="credit-role">Playtester</div>
-                </div>
-                
-                <div class="credit-card" style="animation-delay: 0.3s;">
-                    <div class="photo-container">
-                        <img src="assets/images/fadil.png" alt="Fadil" class="credit-photo" 
-                             onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
-                        <div class="credit-fallback">?</div>
-                    </div>
-                    <div class="credit-name">Fadil</div>
-                    <div class="credit-role">Member</div>
-                </div>
-                
-                <div class="credit-card" style="animation-delay: 0.4s;">
-                    <div class="photo-container">
-                        <img src="assets/images/airlangga.png" alt="Airlangga" class="credit-photo" 
-                             onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
-                        <div class="credit-fallback">?</div>
-                    </div>
-                    <div class="credit-name">Airlangga</div>
-                    <div class="credit-role">Member</div>
-                </div>
-
-                <div class="credit-card" style="animation-delay: 0.5s;">
-                    <div class="photo-container">
-                        <img src="assets/images/bilal.png" alt="Bilal" class="credit-photo" 
-                             onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
-                        <div class="credit-fallback">?</div>
-                    </div>
-                    <div class="credit-name">Bilal</div>
-                    <div class="credit-role">Member</div>
-                </div>
-            </div>
+            <button id="muteBtn">🔊</button>
             
-            <button class="back-btn" id="backFromCredits">Kembali</button>
-        </div>
-
-        <div id="boost-screen">
-            <h2 class="screen-title">Pilih Boost</h2>
-            <div class="boost-grid">
-                <div class="boost-card" data-boost="health" id="boostHealth">
-                    <div class="boost-icon">♥</div>
-                    <div class="boost-name">Health</div>
-                    <div class="boost-desc">Heal 100% HP<br>Cooldown: 7 detik</div>
+            <div id="main-menu">
+                <div class="menu-header">
+                    <h1 class="game-title">AVOIDE</h1>
+                    <p class="game-subtitle">Kelompok 3</p>
+                    <div class="device-indicator" id="deviceIndicator">Desktop Mode</div>
                 </div>
-                <div class="boost-card" data-boost="speed" id="boostSpeed">
-                    <div class="boost-icon">⚡</div>
-                    <div class="boost-name">Speed</div>
-                    <div class="boost-desc">2.5x Kecepatan<br>Durasi: 5s | CD: 10s</div>
-                </div>
-                <div class="boost-card" data-boost="invincible" id="boostInvincible">
-                    <div class="boost-icon">♠</div>
-                    <div class="boost-name">Invincible</div>
-                    <div class="boost-desc">Kebal Damage<br>Durasi: 5s | CD: 10s</div>
-                </div>
-            </div>
-            <div style="font-size: clamp(12px, 3.5vw, 16px); color: #888; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">
-                <span class="desktop-hint">Tekan [E] saat permainan untuk menggunakan</span>
-                <span class="mobile-hint" style="display: none;">Tekan tombol Boost kanan bawah untuk menggunakan</span>
-            </div>
-            <button class="back-btn" id="backFromBoost">Kembali ke Menu</button>
-        </div>
-
-        <div id="game-ui">
-            <div class="hud-panel health-panel glass-panel">
-                <div class="health-label">
-                    <span>Health</span>
-                    <span class="health-value" id="healthText">100%</span>
-                </div>
-                <div class="health-bar-container">
-                    <div class="health-bar-fill" id="healthBarFill" style="width: 100%"></div>
+                <div class="menu-buttons">
+                    <button class="menu-btn" id="playBtn">Mulai Permainan</button>
+                    <button class="menu-btn" id="boostBtn">Pilih Boost</button>
+                    <div class="boost-selected-display" id="selectedBoostDisplay">
+                        Boost Aktif: <span id="selectedBoostName">Tidak Ada</span>
+                    </div>
+                    <button class="menu-btn" id="creditsBtn">Anggota</button>
                 </div>
             </div>
 
-            <div class="hud-panel countdown-panel">
-                <div class="countdown-display" id="countdownTimer">100</div>
-                <div class="countdown-label">Detik Tersisa</div>
+            <div id="credits-screen">
+                <h2 class="screen-title">Anggota Kelompok</h2>
+                
+                <div class="credits-row">
+                    <div class="credit-card" style="animation-delay: 0s;">
+                        <div class="photo-container">
+                            <img src="assets/images/danis.png" alt="Danis" class="credit-photo" 
+                                 onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
+                            <div class="credit-fallback">D</div>
+                        </div>
+                        <div class="credit-name">Danis</div>
+                        <div class="credit-role">Logika & Algoritma</div>
+                    </div>
+                    
+                    <div class="credit-card" style="animation-delay: 0.1s;">
+                        <div class="photo-container">
+                            <img src="assets/images/dip.png" alt="Dipta" class="credit-photo" 
+                                 onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
+                            <div class="credit-fallback">D</div>
+                        </div>
+                        <div class="credit-name">Dipta</div>
+                        <div class="credit-role">Playtester</div>
+                    </div>
+                    
+                    <div class="credit-card" style="animation-delay: 0.2s;">
+                        <div class="photo-container">
+                            <img src="assets/images/risky.png" alt="Risky" class="credit-photo" 
+                                 onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
+                            <div class="credit-fallback">R</div>
+                        </div>
+                        <div class="credit-name">Risky</div>
+                        <div class="credit-role">Playtester</div>
+                    </div>
+                    
+                    <div class="credit-card" style="animation-delay: 0.3s;">
+                        <div class="photo-container">
+                            <img src="assets/images/fadil.png" alt="Fadil" class="credit-photo" 
+                                 onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
+                            <div class="credit-fallback">?</div>
+                        </div>
+                        <div class="credit-name">Fadil</div>
+                        <div class="credit-role">Member</div>
+                    </div>
+                    
+                    <div class="credit-card" style="animation-delay: 0.4s;">
+                        <div class="photo-container">
+                            <img src="assets/images/airlangga.png" alt="Airlangga" class="credit-photo" 
+                                 onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
+                            <div class="credit-fallback">?</div>
+                        </div>
+                        <div class="credit-name">Airlangga</div>
+                        <div class="credit-role">Member</div>
+                    </div>
+
+                    <div class="credit-card" style="animation-delay: 0.5s;">
+                        <div class="photo-container">
+                            <img src="assets/images/bilal.png" alt="Bilal" class="credit-photo" 
+                                 onerror="this.parentElement.querySelector('.credit-fallback').style.display='flex'; this.style.display='none'; console.log('Gagal load:', this.src);">
+                            <div class="credit-fallback">?</div>
+                        </div>
+                        <div class="credit-name">Bilal</div>
+                        <div class="credit-role">Member</div>
+                    </div>
+                </div>
+                
+                <button class="back-btn" id="backFromCredits">Kembali</button>
             </div>
 
-            <div class="hud-panel boost-panel glass-panel" id="boostPanel" style="display: none;">
-                <div class="boost-key" id="boostKey">E</div>
-                <div class="boost-info">
-                    <div class="boost-type" id="boostTypeName">BOOST</div>
-                    <div class="boost-status" id="boostStatus">Ready</div>
-                    <div class="cooldown-bar" id="cooldownBar">
-                        <div class="cooldown-fill" id="cooldownFill" style="width: 100%"></div>
+            <div id="boost-screen">
+                <h2 class="screen-title">Pilih Boost</h2>
+                <div class="boost-grid">
+                    <div class="boost-card" data-boost="health" id="boostHealth">
+                        <div class="boost-icon">♥</div>
+                        <div class="boost-name">Health</div>
+                        <div class="boost-desc">Heal 100% HP<br>Cooldown: 7 detik</div>
+                    </div>
+                    <div class="boost-card" data-boost="speed" id="boostSpeed">
+                        <div class="boost-icon">⚡</div>
+                        <div class="boost-name">Speed</div>
+                        <div class="boost-desc">2.5x Kecepatan<br>Durasi: 5s | CD: 10s</div>
+                    </div>
+                    <div class="boost-card" data-boost="invincible" id="boostInvincible">
+                        <div class="boost-icon">♠</div>
+                        <div class="boost-name">Invincible</div>
+                        <div class="boost-desc">Kebal Damage<br>Durasi: 5s | CD: 10s</div>
+                    </div>
+                </div>
+                <div style="font-size: clamp(12px, 3vw, 16px); color: #888; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">
+                    <span class="desktop-hint">Tekan [E] saat permainan untuk menggunakan</span>
+                    <span class="mobile-hint" style="display: none;">Tekan tombol Boost kanan bawah untuk menggunakan</span>
+                </div>
+                <button class="back-btn" id="backFromBoost">Kembali ke Menu</button>
+            </div>
+
+            <div id="game-ui">
+                <div class="hud-panel health-panel glass-panel">
+                    <div class="health-label">
+                        <span>Health</span>
+                        <span class="health-value" id="healthText">100%</span>
+                    </div>
+                    <div class="health-bar-container">
+                        <div class="health-bar-fill" id="healthBarFill" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <div class="hud-panel countdown-panel">
+                    <div class="countdown-display" id="countdownTimer">100</div>
+                    <div class="countdown-label">Detik Tersisa</div>
+                </div>
+
+                <div class="hud-panel boost-panel glass-panel" id="boostPanel" style="display: none;">
+                    <div class="boost-key" id="boostKey">E</div>
+                    <div class="boost-info">
+                        <div class="boost-type" id="boostTypeName">BOOST</div>
+                        <div class="boost-status" id="boostStatus">Ready</div>
+                        <div class="cooldown-bar" id="cooldownBar">
+                            <div class="cooldown-fill" id="cooldownFill" style="width: 100%"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Mobile Controls - Fixed positioning relative to viewport -->
-        <div class="mobile-controls" id="mobileControls">
-            <div class="joystick-area" id="joystickArea">
-                <div class="joystick-base"></div>
-                <div class="joystick-handle" id="joystickHandle"></div>
+            <!-- Mobile Controls -->
+            <div class="mobile-controls" id="mobileControls">
+                <div class="joystick-area" id="joystickArea">
+                    <div class="joystick-base"></div>
+                    <div class="joystick-handle" id="joystickHandle"></div>
+                </div>
+                
+                <div class="boost-button" id="mobileBoostBtn">
+                    <div class="boost-cooldown-overlay" id="boostCooldownOverlay"></div>
+                    <div class="boost-button-icon" id="mobileBoostIcon">⚡</div>
+                    <div class="boost-button-text" id="mobileBoostText">BOOST</div>
+                </div>
             </div>
-            
-            <div class="boost-button" id="mobileBoostBtn">
-                <div class="boost-cooldown-overlay" id="boostCooldownOverlay"></div>
-                <div class="boost-button-icon" id="mobileBoostIcon">⚡</div>
-                <div class="boost-button-text" id="mobileBoostText">BOOST</div>
-            </div>
-        </div>
 
-        <div id="game-over-screen">
-            <h2 class="game-over-title">Game Over</h2>
-            <div style="font-size: clamp(16px, 5vw, 20px); color: #aaa; margin-bottom: 25px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">Kamu Kalah!</div>
-            <div class="button-group">
-                <button class="restart-btn" id="retryBtn">Coba Lagi</button>
-                <button class="menu-btn-gameover" id="menuBtnGameOver">Menu Utama</button>
+            <div id="game-over-screen">
+                <h2 class="game-over-title">Game Over</h2>
+                <div style="font-size: clamp(16px, 4vw, 20px); color: #aaa; margin-bottom: 25px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">Kamu Kalah!</div>
+                <div class="button-group">
+                    <button class="restart-btn" id="retryBtn">Coba Lagi</button>
+                    <button class="menu-btn-gameover" id="menuBtnGameOver">Menu Utama</button>
+                </div>
             </div>
-        </div>
 
-        <div id="win-screen">
-            <h2 class="win-title">You Win</h2>
-            <div class="win-subtitle">Kamu Promax!</div>
-            <div class="button-group">
-                <button class="restart-btn" id="playAgainBtn">Main Lagi</button>
-                <button class="menu-btn-gameover" id="menuBtnWin">Halaman Utama</button>
+            <div id="win-screen">
+                <h2 class="win-title">You Win</h2>
+                <div class="win-subtitle">Kamu Promax!</div>
+                <div class="button-group">
+                    <button class="restart-btn" id="playAgainBtn">Main Lagi</button>
+                    <button class="menu-btn-gameover" id="menuBtnWin">Halaman Utama</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1196,8 +1185,8 @@ html_content = '''<!DOCTYPE html>
                 LENGTH: 50,
             },
             BOSS: {
-                START_TIME: 45000,  // CHANGED: Boss muncul di detik 45
-                TOTAL_TIME: 100000, // CHANGED: Win di detik 100
+                START_TIME: 45000,  // Boss muncul di detik 45
+                TOTAL_TIME: 100000, // Win di detik 100
                 LASER_RATE: 1,
                 BLOCK_RATE: 10,
                 EYE_SIZE: 100,
@@ -1225,7 +1214,8 @@ html_content = '''<!DOCTYPE html>
             },
             MOBILE: {
                 JOYSTICK_MAX_DIST: 40,
-                JOYSTICK_DEADZONE: 10
+                JOYSTICK_DEADZONE: 10,
+                SCALE: 0.65 // 35% smaller
             }
         };
 
@@ -1451,12 +1441,10 @@ html_content = '''<!DOCTYPE html>
                 let acc = new Vector2(0,0);
                 
                 if (isMobile) {
-                    // Mobile joystick input
                     if (input.mobileJoystick && input.mobileJoystick.active) {
                         acc = input.mobileJoystick.direction.mult(CONFIG.PLAYER.ACCELERATION * 0.5);
                     }
                 } else {
-                    // Desktop keyboard input
                     if(input.keys['KeyW'] || input.keys['ArrowUp']) acc.y -= CONFIG.PLAYER.ACCELERATION;
                     if(input.keys['KeyS'] || input.keys['ArrowDown']) acc.y += CONFIG.PLAYER.ACCELERATION;
                     if(input.keys['KeyA'] || input.keys['ArrowLeft']) acc.x -= CONFIG.PLAYER.ACCELERATION;
@@ -2531,11 +2519,9 @@ html_content = '''<!DOCTYPE html>
             }
             
             setupListeners() { 
-                // Keyboard
                 window.addEventListener('keydown',(e)=>{ this.keys[e.code]=true; }); 
                 window.addEventListener('keyup',(e)=>{ this.keys[e.code]=false; }); 
                 
-                // Touch - Joystick
                 const joystickArea = document.getElementById('joystickArea');
                 const joystickHandle = document.getElementById('joystickHandle');
                 
@@ -2576,7 +2562,6 @@ html_content = '''<!DOCTYPE html>
                                 this.mobileJoystick.direction = new Vector2(0, 0);
                                 this.mobileJoystick.identifier = null;
                                 
-                                // Reset handle position
                                 if (joystickHandle) {
                                     joystickHandle.style.transform = 'translate(-50%, -50%)';
                                     joystickHandle.style.left = '50%';
@@ -2599,13 +2584,11 @@ html_content = '''<!DOCTYPE html>
                 const dy = this.mobileJoystick.currentPos.y - this.mobileJoystick.startPos.y;
                 const distance = Math.sqrt(dx*dx + dy*dy);
                 
-                // Deadzone
                 if (distance < CONFIG.MOBILE.JOYSTICK_DEADZONE) {
                     this.mobileJoystick.direction = new Vector2(0, 0);
                     return;
                 }
                 
-                // Clamp to max distance
                 const maxDist = CONFIG.MOBILE.JOYSTICK_MAX_DIST;
                 const clampedDist = Math.min(distance, maxDist);
                 const angle = Math.atan2(dy, dx);
@@ -2615,7 +2598,6 @@ html_content = '''<!DOCTYPE html>
                     Math.sin(angle) * (clampedDist / maxDist)
                 );
                 
-                // Update visual handle
                 const joystickHandle = document.getElementById('joystickHandle');
                 if (joystickHandle) {
                     const moveX = Math.cos(angle) * clampedDist;
@@ -2637,8 +2619,9 @@ html_content = '''<!DOCTYPE html>
                 window.addEventListener('resize',()=>this.resize()); 
             }
             resize() { 
-                this.canvas.width=window.innerWidth; 
-                this.canvas.height=window.innerHeight; 
+                const wrapper = document.getElementById('game-wrapper');
+                this.canvas.width = wrapper.clientWidth;
+                this.canvas.height = wrapper.clientHeight;
             }
             shakeScreen(amount) { this.shakeAmount=amount; }
             beginFrame() { 
@@ -2711,11 +2694,18 @@ html_content = '''<!DOCTYPE html>
                 this.isMobile = Utils.isMobile();
                 this.setupEventListeners(); 
                 this.checkOrientation();
+                this.applyMobileMode();
                 
                 if (this.isMobile) {
                     this.elements.deviceIndicator.textContent = 'Mobile Mode';
                     document.querySelector('.mobile-hint').style.display = 'inline';
                     document.querySelector('.desktop-hint').style.display = 'none';
+                }
+            }
+            
+            applyMobileMode() {
+                if (this.isMobile) {
+                    document.body.classList.add('mobile-mode');
                 }
             }
             
@@ -2767,7 +2757,6 @@ html_content = '''<!DOCTYPE html>
                 document.getElementById('menuBtnWin').addEventListener('click',()=> this.returnToMenu());
                 document.getElementById('muteBtn').addEventListener('click', () => game.audio.toggleMute());
                 
-                // Mobile boost button
                 if (this.elements.mobileBoostBtn) {
                     this.elements.mobileBoostBtn.addEventListener('touchstart', (e) => {
                         e.preventDefault();
@@ -2794,7 +2783,6 @@ html_content = '''<!DOCTYPE html>
                 this.elements.selectedBoostName.textContent=names[type];
                 if(game.player) game.player.selectedBoost=type;
                 
-                // Update mobile boost button icon
                 if (this.elements.mobileBoostIcon) {
                     const icons = {health: '♥', speed: '⚡', invincible: '♠'};
                     this.elements.mobileBoostIcon.textContent = icons[type] || '⚡';
@@ -2858,12 +2846,10 @@ html_content = '''<!DOCTYPE html>
                     return;
                 }
                 
-                // Desktop UI
                 this.elements.boostPanel.style.display='flex';
                 const names={health:'HEAL', speed:'SPEED', invincible:'SHIELD'};
                 this.elements.boostTypeName.textContent=names[player.selectedBoost];
                 
-                // Mobile UI
                 if (this.elements.mobileBoostBtn) {
                     this.elements.mobileBoostBtn.style.display = 'flex';
                 }
@@ -2871,7 +2857,6 @@ html_content = '''<!DOCTYPE html>
                 const isReady=currentTime>=player.boostCooldownEnd;
                 const isActive=player.isBoostActive && currentTime<player.boostActiveEnd;
                 
-                // Desktop
                 if(isActive) {
                     this.elements.boostKey.className='boost-key ready';
                     this.elements.boostStatus.textContent='ACTIVE';
@@ -2895,7 +2880,6 @@ html_content = '''<!DOCTYPE html>
                     this.elements.cooldownFill.style.width=pct+'%';
                 }
                 
-                // Mobile
                 if (this.elements.mobileBoostBtn) {
                     if (isActive) {
                         this.elements.mobileBoostBtn.className = 'boost-button ready';
@@ -3033,7 +3017,6 @@ html_content = '''<!DOCTYPE html>
                 const remainingSeconds=(CONFIG.BOSS.TOTAL_TIME-this.gameTimer)/1000; 
                 this.ui.updateCountdown(remainingSeconds); 
                 
-                // Handle boost activation
                 if(!this.isMobile && this.input.isPressed('KeyE')) {
                     if(this.player && this.player.selectedBoost && this.player.activateBoost(Date.now())) {
                         this.audio.playBoostActivate();
@@ -3110,10 +3093,10 @@ with open('/mnt/kimi/output/index.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
 print("File berhasil diupdate!")
-print("\nPerubahan yang dilakukan:")
-print("1. Boss Fight: 70 detik → 45 detik")
-print("2. Win Game: 150 detik → 100 detik")
-print("3. Layout mobile menggunakan clamp() dan vw/vh untuk responsivitas")
-print("4. Joystick dan boost button menggunakan persentase layar")
-print("5. Canvas dan container menggunakan 100vw/100vh dengan fixed positioning")
-print("6. Semua font dan ukuran elemen menyesuaikan layar otomatis")
+print("\nPerubahan utama:")
+print("1. Gameplay sekarang berada dalam kotak dengan rounded edges (border-radius: 24px)")
+print("2. Outline putih 3px di sekeliling game container")
+print("3. Mobile mode: UI dan gameplay di-scale 35% lebih kecil (0.65 scale)")
+print("4. Layout responsif menggunakan aspect ratio 16:9")
+print("5. Shadow/glow effect di sekeliling frame")
+print("6. Semua konten menyesuaikan dalam frame yang sudah di-scale")
