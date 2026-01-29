@@ -1,4 +1,6 @@
 
+# Update the HTML with fixes for mobile responsiveness and timing changes
+
 html_content = '''<!DOCTYPE html>
 <html lang="id">
 <head>
@@ -36,20 +38,23 @@ html_content = '''<!DOCTYPE html>
 
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
 
-        body {
+        html, body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #000000;
             color: var(--color-primary);
             overflow: hidden;
             height: 100vh;
             width: 100vw;
+            position: fixed;
             touch-action: none;
         }
 
         #game-container {
             width: 100vw;
             height: 100vh;
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
             overflow: hidden;
             background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
         }
@@ -60,6 +65,8 @@ html_content = '''<!DOCTYPE html>
             top: 0;
             left: 0;
             z-index: 1;
+            width: 100%;
+            height: 100%;
             filter: contrast(1.1) brightness(1.1);
         }
 
@@ -107,6 +114,7 @@ html_content = '''<!DOCTYPE html>
             background: radial-gradient(circle at center, rgba(20,20,20,0.95) 0%, rgba(0,0,0,0.98) 100%);
             transition: opacity 0.8s ease, visibility 0.8s ease;
             overflow: hidden;
+            padding: 20px;
         }
 
         #main-menu::before {
@@ -133,15 +141,16 @@ html_content = '''<!DOCTYPE html>
 
         .menu-header { 
             text-align: center; 
-            margin-bottom: 40px; 
+            margin-bottom: 5vh; 
             animation: slide-up 0.8s ease-out;
             z-index: 2;
+            width: 100%;
         }
 
         .game-title { 
-            font-size: clamp(50px, 10vw, 100px); 
+            font-size: clamp(40px, 12vw, 100px); 
             font-weight: 900; 
-            letter-spacing: 15px; 
+            letter-spacing: clamp(5px, 2vw, 15px); 
             color: #ffffff; 
             text-transform: uppercase; 
             animation: strong-pulse 3s infinite;
@@ -152,6 +161,7 @@ html_content = '''<!DOCTYPE html>
                 0 0 40px rgba(255,255,255,0.2);
             position: relative;
             font-family: 'Courier New', monospace;
+            line-height: 1;
         }
 
         .game-title::after {
@@ -169,9 +179,9 @@ html_content = '''<!DOCTYPE html>
         }
 
         .game-subtitle { 
-            font-size: clamp(18px, 3vw, 24px); 
+            font-size: clamp(14px, 4vw, 24px); 
             color: #888; 
-            letter-spacing: 8px; 
+            letter-spacing: clamp(3px, 1vw, 8px); 
             text-transform: uppercase; 
             margin-bottom: 30px; 
             text-shadow: 0 0 10px rgba(255,255,255,0.3);
@@ -179,26 +189,27 @@ html_content = '''<!DOCTYPE html>
         }
 
         .device-indicator {
-            font-size: 14px;
+            font-size: clamp(12px, 3vw, 14px);
             color: #666;
             margin-bottom: 20px;
             padding: 8px 16px;
             border: 1px solid rgba(255,255,255,0.2);
             border-radius: 20px;
             background: rgba(255,255,255,0.05);
+            display: inline-block;
         }
 
         .menu-buttons { 
             display: flex; 
             flex-direction: column; 
             gap: 15px; 
-            width: min(350px, 80vw);
+            width: min(350px, 85vw);
             z-index: 2;
         }
         
         .menu-btn, .boost-selected-display, .back-btn {
-            padding: 18px 30px;
-            font-size: 16px;
+            padding: clamp(15px, 4vw, 20px) clamp(20px, 5vw, 40px);
+            font-size: clamp(14px, 4vw, 16px);
             color: #ffffff;
             background: rgba(255, 255, 255, 0.05);
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -213,6 +224,7 @@ html_content = '''<!DOCTYPE html>
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             touch-action: manipulation;
+            white-space: nowrap;
         }
 
         .menu-btn::before, .back-btn::before {
@@ -226,7 +238,7 @@ html_content = '''<!DOCTYPE html>
             transition: left 0.5s;
         }
 
-        .menu-btn:hover::before, .back-btn:hover::before, .menu-btn:active::before {
+        .menu-btn:hover::before, .menu-btn:active::before, .back-btn:hover::before, .back-btn:active::before {
             left: 100%;
         }
 
@@ -244,7 +256,7 @@ html_content = '''<!DOCTYPE html>
         .boost-selected-display {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.5);
-            font-size: 14px;
+            font-size: clamp(12px, 3vw, 14px);
             padding: 12px;
             text-align: center;
             color: #fff;
@@ -272,7 +284,7 @@ html_content = '''<!DOCTYPE html>
         #credits-screen.active, #boost-screen.active { display: flex; opacity: 1; }
 
         .screen-title { 
-            font-size: clamp(28px, 5vw, 42px); 
+            font-size: clamp(24px, 6vw, 42px); 
             margin-bottom: 30px; 
             text-transform: uppercase; 
             letter-spacing: 8px; 
@@ -282,6 +294,7 @@ html_content = '''<!DOCTYPE html>
             animation: none;
             border-bottom: 2px solid rgba(255,255,255,0.3);
             padding-bottom: 15px;
+            text-align: center;
         }
 
         .credits-row {
@@ -289,25 +302,27 @@ html_content = '''<!DOCTYPE html>
             flex-direction: row;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
-            max-width: 1400px;
+            gap: 15px;
+            max-width: 100%;
             width: 100%;
             margin-bottom: 30px;
-            padding: 0 20px;
+            padding: 0 10px;
+            overflow-y: auto;
+            max-height: 60vh;
         }
 
         .credit-card {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
+            border-radius: 16px;
             transition: all 0.3s ease;
             animation: fade-in 0.5s forwards;
             opacity: 0;
-            width: min(160px, 28vw);
+            width: clamp(120px, 25vw, 160px);
             flex-shrink: 0;
         }
 
@@ -322,7 +337,7 @@ html_content = '''<!DOCTYPE html>
             width: 100%;
             aspect-ratio: 1;
             position: relative;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 8px 25px rgba(0,0,0,0.4);
@@ -357,7 +372,7 @@ html_content = '''<!DOCTYPE html>
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(36px, 8vw, 48px);
+            font-size: clamp(32px, 8vw, 48px);
             font-weight: 900;
             color: #ffffff;
             position: absolute;
@@ -368,7 +383,7 @@ html_content = '''<!DOCTYPE html>
         }
 
         .credit-name {
-            font-size: clamp(16px, 3vw, 18px);
+            font-size: clamp(14px, 3.5vw, 18px);
             font-weight: 700;
             color: #ffffff;
             margin-bottom: 4px;
@@ -379,7 +394,7 @@ html_content = '''<!DOCTYPE html>
         }
 
         .credit-role {
-            font-size: clamp(10px, 2vw, 12px);
+            font-size: clamp(9px, 2.5vw, 12px);
             color: #aaa;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -389,15 +404,16 @@ html_content = '''<!DOCTYPE html>
 
         .boost-grid {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 30px;
             flex-wrap: wrap;
             justify-content: center;
+            max-width: 100%;
         }
 
         .boost-card {
-            width: min(200px, 27vw);
-            padding: 25px 15px;
+            width: clamp(140px, 27vw, 200px);
+            padding: 20px 15px;
             border: 2px solid rgba(255,255,255,0.2);
             border-radius: 16px;
             text-align: center;
@@ -428,21 +444,21 @@ html_content = '''<!DOCTYPE html>
         }
 
         .boost-icon { 
-            font-size: clamp(40px, 6vw, 48px); 
-            margin-bottom: 15px; 
+            font-size: clamp(32px, 7vw, 48px); 
+            margin-bottom: 12px; 
             filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
         }
         .boost-name { 
-            font-size: clamp(16px, 3vw, 18px); 
+            font-size: clamp(14px, 3.5vw, 18px); 
             font-weight: 700; 
-            margin-bottom: 10px; 
+            margin-bottom: 8px; 
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         .boost-desc { 
-            font-size: clamp(11px, 2vw, 12px); 
+            font-size: clamp(10px, 2.8vw, 12px); 
             color: #aaa; 
-            line-height: 1.5; 
+            line-height: 1.4; 
         }
 
         #game-ui {
@@ -459,25 +475,27 @@ html_content = '''<!DOCTYPE html>
 
         #game-ui.active { opacity: 1; }
 
-        .hud-panel { position: absolute; padding: 15px; pointer-events: auto; }
+        .hud-panel { position: absolute; padding: 10px; pointer-events: auto; }
         .health-panel { 
-            top: 15px; 
-            right: 15px; 
-            width: min(250px, 30vw); 
+            top: 10px; 
+            right: 10px; 
+            width: clamp(150px, 35vw, 280px); 
             background: rgba(0,0,0,0.6);
             border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 12px;
         }
         
-        /* Mobile Controls */
+        /* Mobile Controls - Fixed positioning relative to viewport */
         .mobile-controls {
-            position: absolute;
-            bottom: 20px;
+            position: fixed;
+            bottom: 0;
             left: 0;
             width: 100%;
-            height: 200px;
-            z-index: 10;
+            height: auto;
+            z-index: 100;
             pointer-events: none;
             display: none;
+            padding: 20px;
         }
 
         .mobile-controls.active {
@@ -485,18 +503,19 @@ html_content = '''<!DOCTYPE html>
         }
 
         .joystick-area {
-            position: absolute;
-            left: 30px;
+            position: fixed;
+            left: 20px;
             bottom: 20px;
-            width: 150px;
-            height: 150px;
+            width: clamp(120px, 35vw, 150px);
+            height: clamp(120px, 35vw, 150px);
             pointer-events: auto;
+            z-index: 101;
         }
 
         .joystick-base {
             position: absolute;
-            width: 120px;
-            height: 120px;
+            width: 80%;
+            height: 80%;
             background: var(--joystick-bg);
             border: 2px solid rgba(255,255,255,0.3);
             border-radius: 50%;
@@ -509,8 +528,8 @@ html_content = '''<!DOCTYPE html>
 
         .joystick-handle {
             position: absolute;
-            width: 50px;
-            height: 50px;
+            width: 40%;
+            height: 40%;
             background: var(--joystick-handle);
             border: 2px solid rgba(0,0,0,0.3);
             border-radius: 50%;
@@ -518,15 +537,15 @@ html_content = '''<!DOCTYPE html>
             left: 50%;
             transform: translate(-50%, -50%);
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            transition: transform 0.1s;
+            transition: transform 0.05s;
         }
 
         .boost-button {
-            position: absolute;
-            right: 30px;
-            bottom: 40px;
-            width: 100px;
-            height: 100px;
+            position: fixed;
+            right: 20px;
+            bottom: 30px;
+            width: clamp(80px, 22vw, 100px);
+            height: clamp(80px, 22vw, 100px);
             border-radius: 50%;
             background: var(--boost-btn-bg);
             border: 3px solid rgba(255,255,255,0.5);
@@ -541,6 +560,7 @@ html_content = '''<!DOCTYPE html>
             transition: all 0.2s;
             user-select: none;
             -webkit-user-select: none;
+            z-index: 101;
         }
 
         .boost-button:active {
@@ -561,12 +581,12 @@ html_content = '''<!DOCTYPE html>
         }
 
         .boost-button-icon {
-            font-size: 32px;
+            font-size: clamp(24px, 6vw, 32px);
             margin-bottom: 2px;
         }
 
         .boost-button-text {
-            font-size: 11px;
+            font-size: clamp(9px, 2.5vw, 11px);
             color: #fff;
             font-weight: 700;
             text-transform: uppercase;
@@ -585,29 +605,29 @@ html_content = '''<!DOCTYPE html>
         }
 
         .boost-panel {
-            bottom: 30px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: rgba(0,0,0,0.6);
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 30px;
             border: 1px solid rgba(255,255,255,0.3);
             box-shadow: 0 0 20px rgba(255,255,255,0.1);
         }
 
         .boost-key {
-            width: 35px;
-            height: 35px;
+            width: 30px;
+            height: 30px;
             border: 2px solid rgba(255,255,255,0.5);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            font-size: 16px;
+            font-size: 14px;
             background: rgba(255,255,255,0.1);
             color: #fff;
             box-shadow: 0 0 15px rgba(255,255,255,0.1);
@@ -627,20 +647,20 @@ html_content = '''<!DOCTYPE html>
 
         .boost-info { display: flex; flex-direction: column; }
         .boost-type { 
-            font-size: 12px; 
+            font-size: 11px; 
             font-weight: 700; 
             text-transform: uppercase; 
             color: #fff;
             letter-spacing: 1px;
         }
-        .boost-status { font-size: 10px; color: #aaa; }
+        .boost-status { font-size: 9px; color: #aaa; }
 
         .cooldown-bar {
-            width: 80px;
+            width: 70px;
             height: 3px;
             background: rgba(255,255,255,0.1);
             border-radius: 2px;
-            margin-top: 4px;
+            margin-top: 3px;
             overflow: hidden;
         }
 
@@ -652,14 +672,14 @@ html_content = '''<!DOCTYPE html>
         }
 
         .countdown-panel {
-            top: 15px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
         }
 
         .countdown-display {
-            font-size: clamp(36px, 6vw, 48px);
+            font-size: clamp(32px, 8vw, 48px);
             font-weight: 900;
             color: #ffffff;
             font-family: 'Courier New', monospace;
@@ -672,7 +692,7 @@ html_content = '''<!DOCTYPE html>
         }
 
         .countdown-label { 
-            font-size: 10px; 
+            font-size: clamp(9px, 2.5vw, 12px); 
             text-transform: uppercase; 
             letter-spacing: 2px; 
             color: #888;
@@ -680,11 +700,11 @@ html_content = '''<!DOCTYPE html>
         }
 
         .health-label { 
-            font-size: 11px; 
+            font-size: clamp(10px, 3vw, 12px); 
             text-transform: uppercase; 
             letter-spacing: 1px; 
             color: #aaa; 
-            margin-bottom: 6px; 
+            margin-bottom: 5px; 
             display: flex; 
             justify-content: space-between; 
         }
@@ -729,16 +749,18 @@ html_content = '''<!DOCTYPE html>
             background: rgba(0,0,0,0.95);
             opacity: 0;
             transition: opacity 0.5s ease;
+            padding: 20px;
         }
 
         #game-over-screen.active, #win-screen.active { display: flex; opacity: 1; }
         .game-over-title, .win-title { 
-            font-size: clamp(50px, 10vw, 80px); 
+            font-size: clamp(36px, 10vw, 80px); 
             font-weight: 900; 
             text-transform: uppercase; 
-            letter-spacing: 10px; 
+            letter-spacing: clamp(5px, 2vw, 10px); 
             margin-bottom: 15px;
             color: #fff;
+            text-align: center;
         }
         .game-over-title { 
             animation: shake 0.5s ease-in-out; 
@@ -756,22 +778,23 @@ html_content = '''<!DOCTYPE html>
                 0 0 60px rgba(255,255,255,0.3);
         }
         .win-subtitle { 
-            font-size: clamp(18px, 4vw, 24px); 
+            font-size: clamp(16px, 5vw, 24px); 
             color: #aaa; 
             margin-bottom: 30px; 
             letter-spacing: 4px; 
             text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            text-align: center;
         }
         
         .button-group { 
             display: flex; 
-            gap: 20px; 
+            gap: 15px; 
             flex-wrap: wrap;
             justify-content: center;
         }
         .restart-btn, .menu-btn-gameover {
-            padding: 15px 35px;
-            font-size: 14px;
+            padding: 15px 30px;
+            font-size: clamp(13px, 4vw, 16px);
             background: transparent;
             color: #ffffff;
             border: 2px solid rgba(255,255,255,0.4);
@@ -813,13 +836,13 @@ html_content = '''<!DOCTYPE html>
             position: fixed;
             bottom: 20px;
             right: 20px;
-            z-index: 100;
+            z-index: 1000;
             background: rgba(255,255,255,0.1);
             border: 2px solid rgba(255,255,255,0.3);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 20px;
+            width: clamp(45px, 12vw, 55px);
+            height: clamp(45px, 12vw, 55px);
+            font-size: clamp(18px, 5vw, 24px);
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -845,7 +868,7 @@ html_content = '''<!DOCTYPE html>
             width: 100%;
             height: 100%;
             background: #000;
-            z-index: 1000;
+            z-index: 9999;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -859,7 +882,7 @@ html_content = '''<!DOCTYPE html>
         }
 
         .rotate-icon {
-            font-size: 80px;
+            font-size: clamp(60px, 20vw, 80px);
             margin-bottom: 20px;
             animation: rotate-device 2s ease-in-out infinite;
         }
@@ -869,81 +892,72 @@ html_content = '''<!DOCTYPE html>
             50% { transform: rotate(90deg); }
         }
 
-        /* Mobile Specific Adjustments */
+        /* Simplified mobile adjustments using clamp */
         @media (max-width: 768px) {
             .health-panel {
-                width: 35vw;
-                min-width: 150px;
+                width: 40vw;
+                min-width: 140px;
+                top: 10px;
+                right: 10px;
+                padding: 8px;
+            }
+            
+            .countdown-panel {
+                top: 10px;
             }
             
             .boost-panel {
-                bottom: 180px;
-                transform: translateX(-50%) scale(0.9);
+                bottom: 160px;
+                transform: translateX(-50%) scale(0.85);
             }
             
             .joystick-area {
-                width: 130px;
-                height: 130px;
-                left: 20px;
-                bottom: 20px;
-            }
-            
-            .joystick-base {
-                width: 100px;
-                height: 100px;
-            }
-            
-            .joystick-handle {
-                width: 40px;
-                height: 40px;
+                left: 15px;
+                bottom: 15px;
             }
             
             .boost-button {
-                width: 80px;
-                height: 80px;
-                right: 20px;
-                bottom: 30px;
-            }
-            
-            .boost-button-icon {
-                font-size: 24px;
-            }
-            
-            .boost-button-text {
-                font-size: 9px;
+                right: 15px;
+                bottom: 25px;
             }
             
             .credits-row {
-                gap: 15px;
+                gap: 10px;
+                padding: 0 5px;
             }
             
             .credit-card {
-                width: 28vw;
-                min-width: 120px;
+                width: 26vw;
+                min-width: 110px;
+                padding: 12px 8px;
+            }
+            
+            .boost-grid {
+                gap: 10px;
+            }
+            
+            .boost-card {
+                width: 26vw;
+                min-width: 130px;
                 padding: 15px 10px;
             }
         }
 
-        @media (max-height: 500px) {
+        @media (max-height: 400px) {
             .menu-header {
-                margin-bottom: 20px;
+                margin-bottom: 3vh;
             }
             
             .game-subtitle {
-                margin-bottom: 15px;
+                margin-bottom: 10px;
             }
             
             .menu-buttons {
-                gap: 10px;
-            }
-            
-            .menu-btn {
-                padding: 12px 25px;
+                gap: 8px;
             }
             
             .joystick-area {
                 bottom: 10px;
-                height: 120px;
             }
             
             .boost-button {
@@ -958,8 +972,8 @@ html_content = '''<!DOCTYPE html>
 <body>
     <div id="orientation-warning">
         <div class="rotate-icon">📱</div>
-        <h2 style="font-size: 24px; margin-bottom: 10px;">Mohon Rotasi Perangkat</h2>
-        <p style="color: #888;">Game ini dimainkan dalam mode landscape (horizontal)</p>
+        <h2 style="font-size: clamp(20px, 6vw, 24px); margin-bottom: 10px;">Mohon Rotasi Perangkat</h2>
+        <p style="color: #888; font-size: clamp(14px, 4vw, 16px);">Game ini dimainkan dalam mode landscape (horizontal)</p>
     </div>
 
     <div id="game-container">
@@ -1071,7 +1085,7 @@ html_content = '''<!DOCTYPE html>
                     <div class="boost-desc">Kebal Damage<br>Durasi: 5s | CD: 10s</div>
                 </div>
             </div>
-            <div style="font-size: 14px; color: #888; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">
+            <div style="font-size: clamp(12px, 3.5vw, 16px); color: #888; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">
                 <span class="desktop-hint">Tekan [E] saat permainan untuk menggunakan</span>
                 <span class="mobile-hint" style="display: none;">Tekan tombol Boost kanan bawah untuk menggunakan</span>
             </div>
@@ -1090,7 +1104,7 @@ html_content = '''<!DOCTYPE html>
             </div>
 
             <div class="hud-panel countdown-panel">
-                <div class="countdown-display" id="countdownTimer">150</div>
+                <div class="countdown-display" id="countdownTimer">100</div>
                 <div class="countdown-label">Detik Tersisa</div>
             </div>
 
@@ -1106,7 +1120,7 @@ html_content = '''<!DOCTYPE html>
             </div>
         </div>
 
-        <!-- Mobile Controls -->
+        <!-- Mobile Controls - Fixed positioning relative to viewport -->
         <div class="mobile-controls" id="mobileControls">
             <div class="joystick-area" id="joystickArea">
                 <div class="joystick-base"></div>
@@ -1122,7 +1136,7 @@ html_content = '''<!DOCTYPE html>
 
         <div id="game-over-screen">
             <h2 class="game-over-title">Game Over</h2>
-            <div style="font-size: 18px; color: #aaa; margin-bottom: 25px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">Kamu Kalah!</div>
+            <div style="font-size: clamp(16px, 5vw, 20px); color: #aaa; margin-bottom: 25px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">Kamu Kalah!</div>
             <div class="button-group">
                 <button class="restart-btn" id="retryBtn">Coba Lagi</button>
                 <button class="menu-btn-gameover" id="menuBtnGameOver">Menu Utama</button>
@@ -1182,8 +1196,8 @@ html_content = '''<!DOCTYPE html>
                 LENGTH: 50,
             },
             BOSS: {
-                START_TIME: 70000,
-                TOTAL_TIME: 150000,
+                START_TIME: 45000,  // CHANGED: Boss muncul di detik 45
+                TOTAL_TIME: 100000, // CHANGED: Win di detik 100
                 LASER_RATE: 1,
                 BLOCK_RATE: 10,
                 EYE_SIZE: 100,
@@ -1745,7 +1759,7 @@ html_content = '''<!DOCTYPE html>
             }
             getHitbox() { 
                 if(this.state!=='active' || this.forcedFadeOut) return null; 
-                return {
+                return{
                     type:'line',
                     x:this.pos.x,
                     y:this.pos.y,
@@ -2757,10 +2771,8 @@ html_content = '''<!DOCTYPE html>
                 if (this.elements.mobileBoostBtn) {
                     this.elements.mobileBoostBtn.addEventListener('touchstart', (e) => {
                         e.preventDefault();
-                        if (game.player && game.player.selectedBoost) {
-                            if (game.player.activateBoost(Date.now())) {
-                                game.audio.playBoostActivate();
-                            }
+                        if (game.player && game.player.selectedBoost && game.player.activateBoost(Date.now())) {
+                            game.audio.playBoostActivate();
                         }
                     }, {passive: false});
                     
@@ -3097,11 +3109,11 @@ html_content = '''<!DOCTYPE html>
 with open('/mnt/kimi/output/index.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print("File berhasil dibuat di /mnt/kimi/output/index.html")
-print("Fitur yang ditambahkan:")
-print("1. Deteksi otomatis Mobile vs Desktop")
-print("2. Joystick virtual di kiri bawah untuk mobile")
-print("3. Tombol boost besar di kanan bawah untuk mobile")
-print("4. Peringatan orientasi portrait untuk mobile")
-print("5. Mode landscape wajib")
-print("6. UI responsif untuk ukuran layar mobile")
+print("File berhasil diupdate!")
+print("\nPerubahan yang dilakukan:")
+print("1. Boss Fight: 70 detik → 45 detik")
+print("2. Win Game: 150 detik → 100 detik")
+print("3. Layout mobile menggunakan clamp() dan vw/vh untuk responsivitas")
+print("4. Joystick dan boost button menggunakan persentase layar")
+print("5. Canvas dan container menggunakan 100vw/100vh dengan fixed positioning")
+print("6. Semua font dan ukuran elemen menyesuaikan layar otomatis")
